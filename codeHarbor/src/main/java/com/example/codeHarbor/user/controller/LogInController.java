@@ -1,0 +1,56 @@
+package com.example.codeHarbor.user.controller;
+
+import com.example.codeHarbor.user.dto.UserLoginRequestDto;
+import com.example.codeHarbor.user.dto.UserLoginrResponseDto;
+import com.example.codeHarbor.user.service.UserLoginService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("/login")
+@Tag(name="Login_Controller", description="요청에 따라 일반 로그인과 SNS 로그인을 수행")
+public class LogInController {
+    private final UserLoginService loginService;
+    @PostMapping(value = "/basic", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "기본 로그인 진행", description = "유저 id, pw를 입력받아    검증하고 로그인 절차 진행")
+    public ResponseEntity<UserLoginrResponseDto> basicSignIn(@Valid @RequestBody UserLoginRequestDto input, BindingResult bindingResult)
+    {
+        System.out.println("일반 로그인 시도");
+        if (bindingResult.hasErrors()) {
+            UserLoginrResponseDto response = new UserLoginrResponseDto();
+            List<FieldError> errors = bindingResult.getFieldErrors();
+            for (FieldError error : errors) {
+                String fieldName = error.getField();
+                String errorMsg = error.getDefaultMessage();
+                System.out.println("입력 유효성 검증 실패 - 필드명: " + fieldName + ", 에러메세지: " + errorMsg);
+            }
+            response.setSuccess(false);
+            response.setData("아이디 혹은 비밀번호가 일치하지 않습니다.");
+            return ResponseEntity.ok(response);
+        }
+        UserLoginrResponseDto response = loginService.basicLogin(input);
+        return ResponseEntity.ok(response);
+    }
+
+//    @PostMapping(value = "/sns", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+//    @Operation(summary = "SNS 로그인 진행", description = "SNS 로그인 진행(추후 분기)")
+//    public ResponseEntity<UserLoginrResponseDto> snsSignIn(@Valid @RequestBody UserLoginRequestDto input)
+//    {
+//        System.out.println("SNS 로그인 시도");
+//        UserLoginrResponseDto response = userLoginService.;
+//        return ResponseEntity.ok(response);
+//    }
+}
