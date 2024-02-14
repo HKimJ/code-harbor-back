@@ -3,13 +3,9 @@ package com.example.codeHarbor.user.service;
 import com.example.codeHarbor.user.domain.UserDomain;
 import com.example.codeHarbor.user.dto.UserLoginRequestDto;
 import com.example.codeHarbor.user.dto.UserLoginResponseDto;
-import com.example.codeHarbor.user.dto.UserLoginrResponseDto;
 import com.example.codeHarbor.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 
 import java.util.List;
 
@@ -28,9 +24,10 @@ public class UserLoginService {
                 UserDomain checkUser = userRepo.findUserByUserIdAndUserPassword(id, pw);
                 if (dbUser.equals(checkUser)) {
                     response.setSuccess(true);
-
+                    response.setData("로그인 성공");
                 } else {
-
+                    response.setSuccess(false);
+                    response.setData("아이디 혹은 비밀번호가 일치하지 않습니다.");
                 }
             } else {
                 response.setSuccess(false);

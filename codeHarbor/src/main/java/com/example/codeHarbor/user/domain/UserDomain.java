@@ -1,7 +1,6 @@
 package com.example.codeHarbor.user.domain;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,7 +18,8 @@ public class UserDomain {
     private Long userSeq;
     @Column(columnDefinition = "VARCHAR(20)",unique = true, updatable = false)
     private String userId;
-    private String userPw;
+    @Column(columnDefinition = "VARCHAR(20)")
+    private String userPassword;
 
     @Override
     public boolean equals(Object obj) {

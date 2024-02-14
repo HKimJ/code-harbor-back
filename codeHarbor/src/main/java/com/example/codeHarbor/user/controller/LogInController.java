@@ -1,7 +1,7 @@
 package com.example.codeHarbor.user.controller;
 
 import com.example.codeHarbor.user.dto.UserLoginRequestDto;
-import com.example.codeHarbor.user.dto.UserLoginrResponseDto;
+import com.example.codeHarbor.user.dto.UserLoginResponseDto;
 import com.example.codeHarbor.user.service.UserLoginService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -26,11 +26,11 @@ public class LogInController {
     private final UserLoginService loginService;
     @PostMapping(value = "/basic", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "기본 로그인 진행", description = "유저 id, pw를 입력받아    검증하고 로그인 절차 진행")
-    public ResponseEntity<UserLoginrResponseDto> basicSignIn(@Valid @RequestBody UserLoginRequestDto input, BindingResult bindingResult)
+    public ResponseEntity<UserLoginResponseDto> basicSignIn(@Valid @RequestBody UserLoginRequestDto input, BindingResult bindingResult)
     {
         System.out.println("일반 로그인 시도");
         if (bindingResult.hasErrors()) {
-            UserLoginrResponseDto response = new UserLoginrResponseDto();
+            UserLoginResponseDto response = new UserLoginResponseDto();
             List<FieldError> errors = bindingResult.getFieldErrors();
             for (FieldError error : errors) {
                 String fieldName = error.getField();
@@ -41,7 +41,7 @@ public class LogInController {
             response.setData("아이디 혹은 비밀번호가 일치하지 않습니다.");
             return ResponseEntity.ok(response);
         }
-        UserLoginrResponseDto response = loginService.basicLogin(input);
+        UserLoginResponseDto response = loginService.basicLogin(input);
         return ResponseEntity.ok(response);
     }
 
