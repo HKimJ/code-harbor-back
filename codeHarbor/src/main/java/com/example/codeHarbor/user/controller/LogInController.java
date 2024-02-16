@@ -4,6 +4,7 @@ import com.example.codeHarbor.user.dto.UserLoginRequestDto;
 import com.example.codeHarbor.user.dto.UserLoginResponseDto;
 import com.example.codeHarbor.user.service.UserLoginService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -25,8 +26,8 @@ import java.util.List;
 public class LogInController {
     private final UserLoginService loginService;
     @PostMapping(value = "/basic", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    @Operation(summary = "기본 로그인 진행", description = "유저 id, pw를 입력받아    검증하고 로그인 절차 진행")
-    public ResponseEntity<UserLoginResponseDto> basicSignIn(@Valid @RequestBody UserLoginRequestDto input, BindingResult bindingResult)
+    @Operation(summary = "기본 로그인 진행", description = "유저 id, pw를 입력받아 검증하고 로그인 절차 진행")
+    public ResponseEntity<UserLoginResponseDto> basicSignIn(@Valid @RequestBody @Parameter(description = "일반 로그인 요청시 받는 id, pw", example = "userId") UserLoginRequestDto input, BindingResult bindingResult)
     {
         System.out.println("일반 로그인 시도");
         if (bindingResult.hasErrors()) {
