@@ -10,7 +10,8 @@ public interface UserRepository extends JpaRepository<UserDomain, Long> {
 //    UserDomain findUserByUserSeq(Long userSeq); 필요시 추가
     UserDomain findUserByUserId(String userId);
     boolean existsByUserId(String userId);
-    boolean existsByUserNick(String userNick);
+
+    boolean existsByUserNickname(String userNickname);
     UserDomain findUserByUserIdAndUserPassword(String userId, String userPassword);
     UserDomain save(UserDomain userDomain);
 }
