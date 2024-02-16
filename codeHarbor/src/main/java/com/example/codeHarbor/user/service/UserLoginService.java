@@ -7,7 +7,8 @@ import com.example.codeHarbor.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -23,8 +24,12 @@ public class UserLoginService {
             if (dbUser != null) {
                 UserDomain checkUser = userRepo.findUserByUserIdAndUserPassword(id, pw);
                 if (dbUser.equals(checkUser)) {
+                    Map<String, Object> resultSet = new HashMap<>();
+                    resultSet.put("userId", checkUser.getUserId());
+                    resultSet.put("userNick", checkUser.getUserNick());
                     response.setSuccess(true);
                     response.setData("로그인 성공");
+                    response.setUserData(resultSet);
                 } else {
                     response.setSuccess(false);
                     response.setData("아이디 혹은 비밀번호가 일치하지 않습니다.");
@@ -38,7 +43,7 @@ public class UserLoginService {
             response.setSuccess(false);
             response.setData("로그인 과정에서 문제가 발생했습니다. 관리자에게 문의해주세요.");
         }
-
         return response;
     }
+
 }
