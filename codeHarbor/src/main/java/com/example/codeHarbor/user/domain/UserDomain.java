@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
 import java.util.Objects;
 
 @Entity
@@ -22,6 +23,8 @@ public class UserDomain {
     private String userNickname;
     @Column(columnDefinition = "VARCHAR(20)")
     private String userPassword;
+    @Temporal(value = TemporalType.DATE) @Column(columnDefinition = "DATE DEFAULT (CURRENT_DATE)", insertable = false, updatable = false)
+    private Date userJoindate;
 
     @Override
     public boolean equals(Object obj) {
