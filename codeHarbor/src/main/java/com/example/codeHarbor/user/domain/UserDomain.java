@@ -19,7 +19,7 @@ public class UserDomain {
     @Column(columnDefinition = "VARCHAR(20)",unique = true, updatable = false)
     private String userId;
     @Column(columnDefinition = "VARCHAR(20)", unique = true)
-    private String userNick;
+    private String userNickname;
     @Column(columnDefinition = "VARCHAR(20)")
     private String userPassword;
 
