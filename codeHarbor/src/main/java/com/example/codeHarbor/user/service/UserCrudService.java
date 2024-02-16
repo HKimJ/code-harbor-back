@@ -47,10 +47,10 @@ public class UserCrudService {
     }
 
     public UserCrudResponseDto checkExistNick(UserCrudRequestDto input) {
-        String nick = input.getUserNick();
+        String nick = input.getUserNickname();
         UserCrudResponseDto response = new UserCrudResponseDto();
         try {
-            if (userRepo.existsByUserNick(nick)) {
+            if (userRepo.existsByUserNickname(nick)) {
                 response.setSuccess(false);
                 response.setData("중복된 닉네임입니다.");
             } else {
@@ -64,15 +64,15 @@ public class UserCrudService {
         }
         return response;
     }
-    public UserCrudResponseDto basicUserCrud(UserCrudRequestDto input) {
+    public UserCrudResponseDto basicSignin(UserCrudRequestDto input) {
         UserCrudResponseDto response = new UserCrudResponseDto();
         String id = input.getUserId();
-        String nick = input.getUserNick();
-        String pw = input.getUserPw();
+        String nick = input.getUserNickname();
+        String pw = input.getUserPassword();
         try {
             UserDomain newUser = new UserDomain();
             newUser.setUserId(id);
-            newUser.setUserNick(nick);
+            newUser.setUserNickname(nick);
             newUser.setUserPassword(pw);
             userRepo.save(newUser);
 
