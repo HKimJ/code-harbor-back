@@ -15,12 +15,12 @@ import java.util.Random;
 public class JavaMailService {
     private final JavaMailSender mailSender;
     private final RedisService redisService;
-    private final int EXPIRE_MIN = 3;
+    private final int EXPIRE_MIN = 5;
 
     public void sendVerificationMail(String email) {
         String verifyCode = generateCode();
         MimeMessage mimeMessage = mailSender.createMimeMessage();
-        String title = "CodeHarbor 인증 코드";
+        String title = "[CodeHarbor 인증 코드]";
         StringBuilder content = new StringBuilder();
 
         content.append("<h3> 요청하신 인증 코드는 다음과 같습니다.</h3>")
