@@ -26,10 +26,9 @@ public class UserLoginService {
                 if (dbUser.equals(checkUser)) {
                     Map<String, Object> resultSet = new HashMap<>();
                     resultSet.put("userId", checkUser.getUserId());
-                    resultSet.put("userNick", checkUser.getUserNick());
+                    resultSet.put("userNick", checkUser.getUserNickname());
                     response.setSuccess(true);
-                    response.setData("로그인 성공");
-                    response.setUserData(resultSet);
+                    response.setData("id: "+checkUser.getUserId()+",nickname: " + checkUser.getUserNickname());
                 } else {
                     response.setSuccess(false);
                     response.setData("아이디 혹은 비밀번호가 일치하지 않습니다.");
