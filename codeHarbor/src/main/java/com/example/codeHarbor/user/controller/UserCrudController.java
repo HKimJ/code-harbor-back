@@ -51,9 +51,9 @@ public class UserCrudController {
 
     @PostMapping(value = "/verifyCode", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "인증코드 일치여부 판별", description = "유저가 입력한 인증코드와 메일로 발송된 인증코드 일치여부 판별")
-    public ResponseEntity<UserCrudResponseDto> checkVerifyCode(@Valid @RequestBody @Parameter(description = "사용자가 입력한 인증코드", example = "1234") UserCrudRequestDto input, BindingResult bindingResult)
+    public ResponseEntity<UserCrudResponseDto> checkVerifyCode(@Valid @RequestBody @Parameter(description = "사용자가 입력한 아이디와 인증코드", example = "userid: test@test.com, verifyCode: 1234") UserCrudRequestDto input, BindingResult bindingResult)
     {
-        System.out.println("인증코드 일치여부 판별");
+        System.out.println("사용자 아이디와 인증코드 일치여부 판별");
         if (bindingResult.hasErrors()) {
             UserCrudResponseDto response = new UserCrudResponseDto();
             List<FieldError> errors = bindingResult.getFieldErrors();
