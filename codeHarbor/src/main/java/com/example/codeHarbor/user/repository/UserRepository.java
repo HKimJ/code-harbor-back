@@ -9,6 +9,8 @@ import java.util.Set;
 public interface UserRepository extends JpaRepository<UserDomain, Long> {
 //    UserDomain findUserByUserSeq(Long userSeq); 필요시 추가
     UserDomain findUserByUserId(String userId);
+    boolean existsByUserId(String userId);
+    boolean existsByUserNick(String userNick);
     UserDomain findUserByUserIdAndUserPassword(String userId, String userPassword);
     UserDomain save(UserDomain userDomain);
 }
