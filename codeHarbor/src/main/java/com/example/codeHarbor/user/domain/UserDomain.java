@@ -9,7 +9,7 @@ import java.util.Objects;
 
 @Entity
 @Data
-@Table
+@Table(name="user_Info")
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserDomain {
