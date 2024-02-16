@@ -5,6 +5,7 @@ import com.example.codeHarbor.user.dto.UserCrudResponseDto;
 import com.example.codeHarbor.user.service.UserCrudService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -22,14 +23,14 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/userCrud")
-@Tag(name="userCrud_Controller", description="요청에 따라 회원가입, 회원정보 수정, 회원 탈퇴 등을 수행")
+@Tag(name="userCrud_Controller", description="요청에 따라 회원가입, SNS 회원가입, 회원정보 수정, 회원 탈퇴 등을 수행")
 public class UserCrudController {
 
     private final UserCrudService crudService;
 
     @PostMapping(value = "/checkId", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    @Operation(summary = "일반 회원가입 시 아이디(이메일) 유효성 및 중복 검증", description = "유저 id 입력받아 중복 및 유효성을 검증하고 결과에 따른 데이터 전송")
-    public ResponseEntity<UserCrudResponseDto> checkId(@Valid @RequestBody @Parameter(description = "일반 로그인 요청시 받는 id, pw", example = "userId") UserCrudRequestDto input, BindingResult bindingResult)
+    @Operation(summary = "일반 회원가입 시 아이디(이메일) 유효성 및 중복 검증", description = "유저 id 입력받아 중복 및 형식 유효성을 검증하고 성공시 인증메일 발송 및 요청 수행 결과 데이터 전송")
+    public ResponseEntity<UserCrudResponseDto> checkId(@Valid @RequestBody UserCrudRequestDto input, BindingResult bindingResult)
     {
         System.out.println("이메일 유효성 검증 시도");
         if (bindingResult.hasErrors()) {
@@ -69,10 +70,10 @@ public class UserCrudController {
         return ResponseEntity.ok(response);
     }
     @PostMapping(value = "/signupBasic", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    @Operation(summary = "일반 회원가입 진행", description = "유저 id, pw를 입력받아 이메일 유효성을 검증하고 통과시 회원가입 처리")
-    public ResponseEntity<UserCrudResponseDto> basicSignIn(@Valid @RequestBody @Parameter(description = "일반 로그인 요청시 받는 id, pw", example = "userId") UserCrudRequestDto input, BindingResult bindingResult)
+    @Operation(summary = "일반 회원가입 진행", description = "이메일 및 닉네임 유효성 검증이 끝난 상태에서 회원가입 요청시 회원가입 처리")
+    public ResponseEntity<UserCrudResponseDto> basicSignIn(@Valid @RequestBody UserCrudRequestDto input, BindingResult bindingResult)
     {
-        System.out.println("회원가입 시도");
+        System.out.println("회원가입 요청");
         if (bindingResult.hasErrors()) {
             UserCrudResponseDto response = new UserCrudResponseDto();
             List<FieldError> errors = bindingResult.getFieldErrors();
@@ -82,10 +83,10 @@ public class UserCrudController {
                 System.out.println("입력 유효성 검증 실패 - 필드명: " + fieldName + ", 에러메세지: " + errorMsg);
             }
             response.setSuccess(false);
-            response.setData("아이디 혹은 비밀번호가 일치하지 않습니다.");
+            response.setData("올바르지 않은 형태의 데이터가 전달되었습니다.");
             return ResponseEntity.ok(response);
         }
-        UserCrudResponseDto response = crudService.basicUserCrud(input);
+        UserCrudResponseDto response = crudService.basicSignin(input);
         return ResponseEntity.ok(response);
     }
 
