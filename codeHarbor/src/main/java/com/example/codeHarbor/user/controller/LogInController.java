@@ -27,7 +27,7 @@ public class LogInController {
     private final UserLoginService loginService;
     @PostMapping(value = "/basic", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "기본 로그인 진행", description = "유저 id, pw를 입력받아 검증하고 로그인 절차 진행")
-    public ResponseEntity<UserLoginResponseDto> basicSignIn(@Valid @RequestBody @Parameter(description = "일반 로그인 요청시 받는 id, pw", example = "userId") UserLoginRequestDto input, BindingResult bindingResult)
+    public ResponseEntity<UserLoginResponseDto> basicSignIn(@Valid @RequestBody @Parameter(description = "유저가 로그인 시도시 입력한 id, pw") UserLoginRequestDto input, BindingResult bindingResult)
     {
         System.out.println("일반 로그인 시도");
         if (bindingResult.hasErrors()) {
