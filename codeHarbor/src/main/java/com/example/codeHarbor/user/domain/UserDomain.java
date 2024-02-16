@@ -18,6 +18,8 @@ public class UserDomain {
     private Long userSeq;
     @Column(columnDefinition = "VARCHAR(20)",unique = true, updatable = false)
     private String userId;
+    @Column(columnDefinition = "VARCHAR(20)", unique = true)
+    private String userNick;
     @Column(columnDefinition = "VARCHAR(20)")
     private String userPassword;
 
