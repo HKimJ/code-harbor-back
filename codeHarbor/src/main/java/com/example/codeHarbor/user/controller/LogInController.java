@@ -17,7 +17,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -32,6 +34,7 @@ public class LogInController {
         System.out.println("일반 로그인 시도");
         if (bindingResult.hasErrors()) {
             UserLoginResponseDto response = new UserLoginResponseDto();
+            Map<String, Object> data =  new HashMap<>();
             List<FieldError> errors = bindingResult.getFieldErrors();
             for (FieldError error : errors) {
                 String fieldName = error.getField();
@@ -39,7 +42,8 @@ public class LogInController {
                 System.out.println("입력 유효성 검증 실패 - 필드명: " + fieldName + ", 에러메세지: " + errorMsg);
             }
             response.setSuccess(false);
-            response.setData("아이디 혹은 비밀번호가 일치하지 않습니다.");
+            data.put("msg", "올바른 매개변수명이나 형식이 전달되지 않았습니다.");
+            response.setData(data);
             return ResponseEntity.ok(response);
         }
         UserLoginResponseDto response = loginService.basicLogin(input);
