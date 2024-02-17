@@ -5,7 +5,6 @@ import com.example.codeHarbor.user.dto.UserCrudResponseDto;
 import com.example.codeHarbor.user.service.UserCrudService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +17,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -35,6 +36,7 @@ public class UserCrudController {
         System.out.println("이메일 유효성 검증 시도");
         if (bindingResult.hasErrors()) {
             UserCrudResponseDto response = new UserCrudResponseDto();
+            Map<String, Object> data = new HashMap<>();
             List<FieldError> errors = bindingResult.getFieldErrors();
             for (FieldError error : errors) {
                 String fieldName = error.getField();
@@ -42,7 +44,8 @@ public class UserCrudController {
                 System.out.println("입력 유효성 검증 실패 - 필드명: " + fieldName + ", 에러메세지: " + errorMsg);
             }
             response.setSuccess(false);
-            response.setData("올바른 이메일 형태가 아닙니다.");
+            data.put("msg", "올바른 매개변수명이나 형식이 전달되지 않았습니다.");
+            response.setData(data);
             return ResponseEntity.ok(response);
         }
         UserCrudResponseDto response = crudService.checkId(input);
@@ -56,6 +59,7 @@ public class UserCrudController {
         System.out.println("사용자 아이디와 인증코드 일치여부 판별");
         if (bindingResult.hasErrors()) {
             UserCrudResponseDto response = new UserCrudResponseDto();
+            Map<String, Object> data = new HashMap<>();
             List<FieldError> errors = bindingResult.getFieldErrors();
             for (FieldError error : errors) {
                 String fieldName = error.getField();
@@ -63,10 +67,34 @@ public class UserCrudController {
                 System.out.println("입력 유효성 검증 실패 - 필드명: " + fieldName + ", 에러메세지: " + errorMsg);
             }
             response.setSuccess(false);
-            response.setData("올바른 인증코드 형태가 아닙니다.");
+            data.put("msg", "올바른 매개변수명이나 형식이 전달되지 않았습니다.");
+            response.setData(data);
             return ResponseEntity.ok(response);
         }
         UserCrudResponseDto response = crudService.verifyCode(input);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping(value = "/checkNickname", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "일반 회원가입 시 닉네임 유효성 및 중복 검증", description = "유저 닉네임 입력받아 중복 및 형식 유효성을 검증하고 결과에 따른 데이터 전송")
+    public ResponseEntity<UserCrudResponseDto> checkNickname(@Valid @RequestBody UserCrudRequestDto input, BindingResult bindingResult)
+    {
+        System.out.println("닉네임 유효성 검증 시도");
+        if (bindingResult.hasErrors()) {
+            UserCrudResponseDto response = new UserCrudResponseDto();
+            Map<String, Object> data = new HashMap<>();
+            List<FieldError> errors = bindingResult.getFieldErrors();
+            for (FieldError error : errors) {
+                String fieldName = error.getField();
+                String errorMsg = error.getDefaultMessage();
+                System.out.println("입력 유효성 검증 실패 - 필드명: " + fieldName + ", 에러메세지: " + errorMsg);
+            }
+            response.setSuccess(false);
+            data.put("msg", "올바른 매개변수명이나 형식이 전달되지 않았습니다.");
+            response.setData(data);
+            return ResponseEntity.ok(response);
+        }
+        UserCrudResponseDto response = crudService.checkExistNick(input);
         return ResponseEntity.ok(response);
     }
     @PostMapping(value = "/signupBasic", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -76,6 +104,7 @@ public class UserCrudController {
         System.out.println("회원가입 요청");
         if (bindingResult.hasErrors()) {
             UserCrudResponseDto response = new UserCrudResponseDto();
+            Map<String, Object> data = new HashMap<>();
             List<FieldError> errors = bindingResult.getFieldErrors();
             for (FieldError error : errors) {
                 String fieldName = error.getField();
@@ -83,10 +112,34 @@ public class UserCrudController {
                 System.out.println("입력 유효성 검증 실패 - 필드명: " + fieldName + ", 에러메세지: " + errorMsg);
             }
             response.setSuccess(false);
-            response.setData("올바르지 않은 형태의 데이터가 전달되었습니다.");
+            data.put("msg", "올바른 매개변수명이나 형식이 전달되지 않았습니다.");
+            response.setData(data);
             return ResponseEntity.ok(response);
         }
         UserCrudResponseDto response = crudService.basicSignin(input);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping(value = "/findPassword", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "비밀번호 찾기", description = "요청시 입력한 이메일로 기존 비밀번호를 전송")
+    public ResponseEntity<UserCrudResponseDto> findPassword(@Valid @RequestBody UserCrudRequestDto input, BindingResult bindingResult)
+    {
+        System.out.println("비밀번호 찾기 요청");
+        if (bindingResult.hasErrors()) {
+            UserCrudResponseDto response = new UserCrudResponseDto();
+            Map<String, Object> data = new HashMap<>();
+            List<FieldError> errors = bindingResult.getFieldErrors();
+            for (FieldError error : errors) {
+                String fieldName = error.getField();
+                String errorMsg = error.getDefaultMessage();
+                System.out.println("입력 유효성 검증 실패 - 필드명: " + fieldName + ", 에러메세지: " + errorMsg);
+            }
+            response.setSuccess(false);
+            data.put("msg", "올바른 매개변수명이나 형식이 전달되지 않았습니다.");
+            response.setData(data);
+            return ResponseEntity.ok(response);
+        }
+        UserCrudResponseDto response = crudService.findPassword(input);
         return ResponseEntity.ok(response);
     }
 
