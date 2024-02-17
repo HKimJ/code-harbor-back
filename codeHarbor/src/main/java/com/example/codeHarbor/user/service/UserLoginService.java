@@ -17,30 +17,31 @@ public class UserLoginService {
 
     public UserLoginResponseDto basicLogin(UserLoginRequestDto input) {
         UserLoginResponseDto response = new UserLoginResponseDto();
-        String id = input.getUserId();
-        String pw = input.getUserPassword();
+        Map<String, Object> data = new HashMap<>();
         try {
-            UserDomain dbUser = userRepo.findUserByUserId(id);
+            UserDomain dbUser = userRepo.findUserByUserId(input.getUserId());
             if (dbUser != null) {
-                UserDomain checkUser = userRepo.findUserByUserIdAndUserPassword(id, pw);
+                UserDomain checkUser = userRepo.findUserByUserIdAndUserPassword(input.getUserId(), input.getUserPassword());
                 if (dbUser.equals(checkUser)) {
-                    Map<String, Object> resultSet = new HashMap<>();
-                    resultSet.put("userId", checkUser.getUserId());
-                    resultSet.put("userNick", checkUser.getUserNickname());
                     response.setSuccess(true);
-                    response.setData("id: "+checkUser.getUserId()+",nickname: " + checkUser.getUserNickname());
+                    data.put("userId", checkUser.getUserId());
+                    data.put("userNickname", checkUser.getUserNickname());
+                    response.setData(data);
                 } else {
                     response.setSuccess(false);
-                    response.setData("아이디 혹은 비밀번호가 일치하지 않습니다.");
+                    data.put("msg", "아이디 혹은 비밀번호가 일치하지 않습니다.");
+                    response.setData(data);
                 }
             } else {
                 response.setSuccess(false);
-                response.setData("아이디 혹은 비밀번호가 일치하지 않습니다.");
+                data.put("msg", "아이디 혹은 비밀번호가 일치하지 않습니다.");
+                response.setData(data);
             }
         } catch(Exception e) {
             e.printStackTrace();
             response.setSuccess(false);
-            response.setData("로그인 과정에서 문제가 발생했습니다. 관리자에게 문의해주세요.");
+            data.put("msg", "로그인 과정에서 문제가 발생했습니다. 문제 지속시 관리자에게 연락해주세요.");
+            response.setData(data);
         }
         return response;
     }
