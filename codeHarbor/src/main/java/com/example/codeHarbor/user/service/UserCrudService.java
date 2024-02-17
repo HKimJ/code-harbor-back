@@ -45,7 +45,6 @@ public class UserCrudService {
         Map<String, Object> data = new HashMap<>();
         try {
             response = mailSender.confirmVerificationMail(input.getUserId(), input.getVerifyCode());
-
         } catch (Exception e) {
             e.printStackTrace();
             response.setSuccess(false);
@@ -103,7 +102,13 @@ public class UserCrudService {
         Map<String, Object> data = new HashMap<>();
         try {
             UserDomain lostPw = userRepo.findUserByUserId(input.getUserId());
-            response = mailSender.sendLostPasswordMail(lostPw.getUserId(), lostPw.getUserPassword());
+            if (lostPw != null) {
+                response = mailSender.sendLostPasswordMail(lostPw.getUserId(), lostPw.getUserPassword());
+            } else {
+                response.setSuccess(false);
+                data.put("msg", "존재하지 않는 이메일입니다.");
+                response.setData(data);
+            }
         } catch(Exception e) {
             e.printStackTrace();
             response.setSuccess(false);
