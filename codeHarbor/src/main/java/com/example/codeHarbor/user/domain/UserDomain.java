@@ -17,7 +17,7 @@ public class UserDomain {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userSeq;
-    @Column(columnDefinition = "VARCHAR(20)",unique = true, updatable = false)
+    @Column(columnDefinition = "VARCHAR(50)",unique = true, updatable = false)
     private String userId;
     @Column(columnDefinition = "VARCHAR(20)", unique = true)
     private String userNickname;
