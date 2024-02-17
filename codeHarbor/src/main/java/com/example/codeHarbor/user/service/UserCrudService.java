@@ -8,6 +8,9 @@ import com.example.codeHarbor.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Service
 @RequiredArgsConstructor
 public class UserCrudService {
@@ -16,73 +19,96 @@ public class UserCrudService {
     public UserCrudResponseDto checkId(UserCrudRequestDto input) {
         String id = input.getUserId();
         UserCrudResponseDto response = new UserCrudResponseDto();
+        Map<String, Object> data = new HashMap<>();
         try {
             if (userRepo.existsByUserId(id)) {
                 response.setSuccess(false);
-                response.setData("이미 가입된 이메일입니다.");
+                data.put("msg", "이미 가입된 이메일입니다.");
+                response.setData(data);
             } else {
                 mailSender.sendVerificationMail(id);
                 response.setSuccess(true);
-                response.setData("인증 메일을 발송했습니다.");
+                data.put("msg", "인증 메일을 발송했습니다.");
+                response.setData(data);
             }
         } catch(Exception e) {
             e.printStackTrace();
             response.setSuccess(false);
-            response.setData("중복 체크시 문제가 발생했습니다. 관리자에게 문의해주세요.");
+            data.put("msg", "인증 메일 발송 과정에서 문제가 발생했습니다.");
+            response.setData(data);
         }
         return response;
     }
 
     public UserCrudResponseDto verifyCode(UserCrudRequestDto input) {
         UserCrudResponseDto response = new UserCrudResponseDto();
+        Map<String, Object> data = new HashMap<>();
         try {
             response = mailSender.confirmVerificationMail(input.getUserId(), input.getVerifyCode());
 
         } catch (Exception e) {
             e.printStackTrace();
             response.setSuccess(false);
-            response.setData("인증코드 검증과정에서 문제가 발생했습니다.");
+            data.put("msg", "인증 코드 검증 과정에서 문제가 발생했습니다.");
+            response.setData(data);
         }
         return response;
     }
 
     public UserCrudResponseDto checkExistNick(UserCrudRequestDto input) {
-        String nick = input.getUserNickname();
         UserCrudResponseDto response = new UserCrudResponseDto();
+        Map<String, Object> data = new HashMap<>();
         try {
-            if (userRepo.existsByUserNickname(nick)) {
+            if (userRepo.existsByUserNickname(input.getUserNickname())) {
                 response.setSuccess(false);
-                response.setData("중복된 닉네임입니다.");
+                data.put("msg", "이미 존재하는 닉네임입니다.");
+                response.setData(data);
             } else {
                 response.setSuccess(true);
-                response.setData("가입 가능한 닉네임입니다.");
+                data.put("msg", "가입 가능한 닉네임입니다.");
+                response.setData(data);
             }
         } catch(Exception e) {
             e.printStackTrace();
             response.setSuccess(false);
-            response.setData("문제가 발생했습니다. 관리자에게 문의해주세요.");
+            data.put("msg", "닉네임 유효성 검증 중 문제가 발생했습니다.");
+            response.setData(data);
         }
         return response;
     }
     public UserCrudResponseDto basicSignin(UserCrudRequestDto input) {
         UserCrudResponseDto response = new UserCrudResponseDto();
-        String id = input.getUserId();
-        String nick = input.getUserNickname();
-        String pw = input.getUserPassword();
+        Map<String, Object> data = new HashMap<>();
         try {
             UserDomain newUser = new UserDomain();
-            newUser.setUserId(id);
-            newUser.setUserNickname(nick);
-            newUser.setUserPassword(pw);
+            newUser.setUserId(input.getUserId());
+            newUser.setUserNickname(input.getUserNickname());
+            newUser.setUserPassword(input.getUserPassword());
             userRepo.save(newUser);
 
             response.setSuccess(true);
-            response.setData("회원 가입에 성공했습니다.");
+            data.put("msg", "회원 가입에 성공했습니다.");
+            response.setData(data);
         } catch(Exception e) {
             e.printStackTrace();
             response.setSuccess(false);
-            response.setData("회원가입 중 문제가 발생했습니다. 관리자에게 문의하세요");
+            data.put("msg", "회원가입 중 문제가 발생했습니다. 관리자에게 문의하세요.");
+            response.setData(data);
+        }
+        return response;
+    }
 
+    public UserCrudResponseDto findPassword(UserCrudRequestDto input) {
+        UserCrudResponseDto response = new UserCrudResponseDto();
+        Map<String, Object> data = new HashMap<>();
+        try {
+            UserDomain lostPw = userRepo.findUserByUserId(input.getUserId());
+            response = mailSender.sendLostPasswordMail(lostPw.getUserId(), lostPw.getUserPassword());
+        } catch(Exception e) {
+            e.printStackTrace();
+            response.setSuccess(false);
+            data.put("msg", "비밀번호 찾기 도중 문제가 발생했습니다. 문제가 지속되면 관리자에게 연락해주세요.");
+            response.setData(data);
         }
         return response;
     }
