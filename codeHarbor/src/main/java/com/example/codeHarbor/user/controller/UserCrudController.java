@@ -4,9 +4,6 @@ import com.example.codeHarbor.user.dto.UserCrudRequestDto;
 import com.example.codeHarbor.user.dto.UserCrudResponseDto;
 import com.example.codeHarbor.user.service.UserCrudService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -16,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.HashMap;
@@ -31,9 +29,7 @@ public class UserCrudController {
     private final UserCrudService crudService;
 
     @PostMapping(value = "/checkId", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    @Operation(summary = "일반 회원가입 시 아이디(이메일) 유효성 및 중복 검증",
-            description = "유저 id 입력받아 중복 및 형식 유효성을 검증하고 성공시 인증메일 발송 및 요청 수행 결과 데이터 전송",
-            requestBody = @RequestBody(content = @Content(schema = @Schema(implementation = UserCrudRequestDto.class, requiredProperties = {"userId"}))))
+    @Operation(summary = "일반 회원가입 시 아이디(이메일) 유효성 및 중복 검증", description = "유저 id 입력받아 중복 및 형식 유효성을 검증하고 성공시 인증메일 발송 및 요청 수행 결과 데이터 전송")
     public ResponseEntity<UserCrudResponseDto> checkId(@Valid @RequestBody UserCrudRequestDto input, BindingResult bindingResult)
     {
         System.out.println("이메일 유효성 검증 시도");
