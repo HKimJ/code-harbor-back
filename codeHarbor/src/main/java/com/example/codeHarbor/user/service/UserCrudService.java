@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 @RequiredArgsConstructor
@@ -20,6 +22,12 @@ public class UserCrudService {
         String id = input.getUserId();
         UserCrudResponseDto response = new UserCrudResponseDto();
         Map<String, Object> data = new HashMap<>();
+        if (!isEmail(id)) {
+            response.setSuccess(false);
+            data.put("msg", "올바른 아이디 형태가 아닙니다.");
+            response.setData(data);
+            return response;
+        }
         try {
             if (userRepo.existsByUserId(id)) {
                 response.setSuccess(false);
@@ -100,6 +108,12 @@ public class UserCrudService {
     public UserCrudResponseDto findPassword(UserCrudRequestDto input) {
         UserCrudResponseDto response = new UserCrudResponseDto();
         Map<String, Object> data = new HashMap<>();
+        if(!isEmail(input.getUserId())) {
+            response.setSuccess(false);
+            data.put("msg", "올바른 아이디 형태가 아닙니다.");
+            response.setData(data);
+            return response;
+        }
         try {
             UserDomain lostPw = userRepo.findUserByUserId(input.getUserId());
             if (lostPw != null) {
@@ -116,5 +130,11 @@ public class UserCrudService {
             response.setData(data);
         }
         return response;
+    }
+    public boolean isEmail(String input) {
+        final String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
+        Pattern pattern = Pattern.compile(emailRegex);
+        Matcher matcher = pattern.matcher(input);
+        return matcher.matches();
     }
 }
