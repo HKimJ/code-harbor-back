@@ -5,6 +5,8 @@ import com.example.codeHarbor.user.dto.UserLoginResponseDto;
 import com.example.codeHarbor.user.service.UserLoginService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +29,14 @@ import java.util.Map;
 @Tag(name="Login_Controller", description="요청에 따라 일반 로그인과 SNS 로그인을 수행")
 public class LogInController {
     private final UserLoginService loginService;
+    @io.swagger.v3.oas.annotations.parameters.RequestBody (content = @Content(
+            examples = {
+                    @ExampleObject(name = "Example", value = """ 
+                { 
+                    "userId" : "test@example@test.com" ,
+                    "userPassword" : "testPw"
+                } 
+            """)}))
     @PostMapping(value = "/basic", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "기본 로그인 진행", description = "유저 id, pw를 입력받아 검증하고 로그인 절차 진행")
     public ResponseEntity<UserLoginResponseDto> basicSignIn(@Valid @RequestBody @Parameter(description = "유저가 로그인 시도시 입력한 id, pw") UserLoginRequestDto input, BindingResult bindingResult)
