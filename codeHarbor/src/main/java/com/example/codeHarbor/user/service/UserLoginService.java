@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 @RequiredArgsConstructor
@@ -18,6 +20,12 @@ public class UserLoginService {
     public UserLoginResponseDto basicLogin(UserLoginRequestDto input) {
         UserLoginResponseDto response = new UserLoginResponseDto();
         Map<String, Object> data = new HashMap<>();
+        if (!isEmail(input.getUserId())) {
+            response.setSuccess(false);
+            data.put("msg", "올바른 아이디 형태가 아닙니다");
+            response.setData(data);
+            return response;
+        }
         try {
             UserDomain dbUser = userRepo.findUserByUserId(input.getUserId());
             if (dbUser != null) {
@@ -44,6 +52,13 @@ public class UserLoginService {
             response.setData(data);
         }
         return response;
+    }
+
+    public boolean isEmail(String input) {
+        final String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
+        Pattern pattern = Pattern.compile(emailRegex);
+        Matcher matcher = pattern.matcher(input);
+        return matcher.matches();
     }
 
 }
