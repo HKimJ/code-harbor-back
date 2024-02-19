@@ -96,7 +96,7 @@ public class UserCrudService {
         } catch(Exception e) {
             e.printStackTrace();
             response.setSuccess(false);
-            data.put("msg", "회원가입 중 문제가 발생했습니다. 관리자에게 문의하세요.");
+            data.put("msg", "회원가입 중 문제가 발생했습니다. 문제 지속시 관리자에게 문의하세요.");
             response.setData(data);
         }
         return response;
