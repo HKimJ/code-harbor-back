@@ -34,10 +34,7 @@ public class UserCrudService {
                 data.put("msg", "이미 가입된 이메일입니다.");
                 response.setData(data);
             } else {
-                mailSender.sendVerificationMail(id);
-                response.setSuccess(true);
-                data.put("msg", "인증 메일을 발송했습니다.");
-                response.setData(data);
+                response = mailSender.sendVerificationMail(id, new UserCrudResponseDto());
             }
         } catch(Exception e) {
             e.printStackTrace();
