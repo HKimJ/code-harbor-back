@@ -19,7 +19,8 @@ public class JavaMailService {
     private final RedisService redisService;
     private final int EXPIRE_MIN = 5;
 
-    public void sendVerificationMail(String email) {
+    public UserCrudResponseDto sendVerificationMail(String email, UserCrudResponseDto response) {
+        Map<String, Object> data = new HashMap<>();
         String verifyCode = generateCode();
         MimeMessage mimeMessage = mailSender.createMimeMessage();
         String title = "[CodeHarbor 인증 코드]";
@@ -36,9 +37,16 @@ public class JavaMailService {
             mimeMessageHelper.setText(content.toString(), true); // 메일 본문 내용, HTML 여부
             mailSender.send(mimeMessage);
             redisService.storeDataInRedis(email, verifyCode, EXPIRE_MIN);
+            response.setSuccess(true);
+            data.put("msg", "인증메일 발송에 성공했습니다.");
+            response.setData(data);
         } catch (Exception e) {
             e.printStackTrace();
+            response.setSuccess(false);
+            data.put("msg", "인증메일 발송 과정에서 문제가 발생했습니다. 문제 지속시 관리자에게 문의해주세요.");
+            response.setData(data);
         }
+        return response;
     }
 
     public UserCrudResponseDto confirmVerificationMail(String email, String verifyCode) {
