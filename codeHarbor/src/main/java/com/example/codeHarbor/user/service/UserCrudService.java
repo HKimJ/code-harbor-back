@@ -1,5 +1,8 @@
 package com.example.codeHarbor.user.service;
 
+import com.example.codeHarbor.child.domain.UserGroupDomain;
+import com.example.codeHarbor.child.repository.UserGroupRepository;
+import com.example.codeHarbor.group.repository.GroupRepository;
 import com.example.codeHarbor.tool.javamail.JavaMailService;
 import com.example.codeHarbor.user.domain.UserDomain;
 import com.example.codeHarbor.user.dto.UserCrudRequestDto;
@@ -17,6 +20,8 @@ import java.util.regex.Pattern;
 @RequiredArgsConstructor
 public class UserCrudService {
     private final UserRepository userRepo;
+    private final GroupRepository groupRepo;
+    private final UserGroupRepository userGroupRepo;
     private final JavaMailService mailSender;
     public UserCrudResponseDto checkId(UserCrudRequestDto input) {
         String id = input.getUserId();
@@ -124,6 +129,67 @@ public class UserCrudService {
             e.printStackTrace();
             response.setSuccess(false);
             data.put("msg", "비밀번호 찾기 도중 문제가 발생했습니다. 문제가 지속되면 관리자에게 연락해주세요.");
+            response.setData(data);
+        }
+        return response;
+    }
+
+    public UserCrudResponseDto refreshUser(UserCrudRequestDto input) {
+        UserCrudResponseDto response = new UserCrudResponseDto();
+        Map<String, Object> data = new HashMap<>();
+        try {
+            if(input.getUserId() != null) {
+                UserGroupDomain refreshingUser = userGroupRepo.findUserGroupByUserAndGroup(userRepo.findUserByUserId(input.getUserId()), groupRepo.findGroupByGroupName(input.getUserGroupName()));
+                response.setSuccess(true);
+                data.put("userId", refreshingUser.getUser().getUserId());
+                data.put("userNickname", refreshingUser.getUser().getUserNickname());
+                data.put("userGroupname", refreshingUser.getGroup().getGroupName());
+                data.put("msg", "유저정보 최신화 성공");
+                response.setData(data);
+            } else {
+                response.setSuccess(false);
+                data.put("msg", "올바르지 않은 이용자 요청입니다");
+                response.setData(data);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.setSuccess(false);
+            data.put("msg", "유저정보 최신화 중 알수없는 문제가 발생했습니다. 지속시 관리자에게 연락해주세요.");
+            response.setData(data);
+        }
+        return response;
+    }
+
+    public UserCrudResponseDto modifyUserInfo(UserCrudRequestDto input) {
+        UserCrudResponseDto response = new UserCrudResponseDto();
+        Map<String, Object> data = new HashMap<>();
+        try {
+            if(input.getUserId() != null) {
+                UserGroupDomain refreshingUser = userGroupRepo.findUserGroupByUserAndGroup(userRepo.findUserByUserId(input.getUserId()), groupRepo.findGroupByGroupName(input.getUserGroupName()));
+                if (!input.getUserGroupName().equals(refreshingUser.getGroup().getGroupName())) {
+                    refreshingUser.setGroup(groupRepo.findGroupByGroupName(input.getUserGroupName()));
+                }
+                if (!input.getUserNickname().equals(refreshingUser.getUser().getUserNickname())) {
+                    refreshingUser.setUser(userRepo.findUserByUserNickname(input.getUserNickname()));
+                }
+                if (!input.getUserPassword().equals(refreshingUser.getUser().getUserPassword())) {
+                    refreshingUser.getUser().setUserPassword(input.getUserPassword()); // 체크 요망
+                }
+                userRepo.save(refreshingUser.getUser());
+                response.setSuccess(true);
+                data.put("userNickname", refreshingUser.getUser().getUserNickname());
+                data.put("userGroupname", refreshingUser.getGroup().getGroupName());
+                data.put("msg", "유저정보 최신화 성공");
+                response.setData(data);
+            } else {
+                response.setSuccess(false);
+                data.put("msg", "올바르지 않은 이용자 요청입니다");
+                response.setData(data);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.setSuccess(false);
+            data.put("msg", "유저정보 변경 중 알수없는 문제가 발생했습니다. 지속시 관리자에게 연락해주세요.");
             response.setData(data);
         }
         return response;
