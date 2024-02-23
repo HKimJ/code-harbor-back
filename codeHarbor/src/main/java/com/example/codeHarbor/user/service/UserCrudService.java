@@ -134,7 +134,7 @@ public class UserCrudService {
         return response;
     }
 
-    public UserCrudResponseDto refreshUser(UserCrudRequestDto input) {
+    public UserCrudResponseDto latestUserInfo(UserCrudRequestDto input) {
         UserCrudResponseDto response = new UserCrudResponseDto();
         Map<String, Object> data = new HashMap<>();
         try {

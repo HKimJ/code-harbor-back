@@ -187,9 +187,9 @@ public class UserCrudController {
                     "userId" : "test@example@test.com" 
                 } 
             """)}))
-    @PostMapping(value = "/refreshUser", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/latestUserInfo", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "회원정보 최신화 진행", description = "클라이언트 요청시 요청에 포함된 userId에 해당하는 유저의 최신화 정보를 전달")
-    public ResponseEntity<UserCrudResponseDto> refreshUser(@Valid @RequestBody UserCrudRequestDto input, BindingResult bindingResult)
+    public ResponseEntity<UserCrudResponseDto> latestUserInfo(@Valid @RequestBody UserCrudRequestDto input, BindingResult bindingResult)
     {
         System.out.println("최신화된 유저정보 요청");
         if (bindingResult.hasErrors()) {
@@ -206,7 +206,7 @@ public class UserCrudController {
             response.setData(data);
             return ResponseEntity.ok(response);
         }
-        UserCrudResponseDto response = crudService.refreshUser(input);
+        UserCrudResponseDto response = crudService.latestUserInfo(input);
         return ResponseEntity.ok(response);
     }
 
@@ -221,9 +221,9 @@ public class UserCrudController {
                     etc...
                 } 
             """)}))
-    @PostMapping(value = "/modifyUser", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/modifyUserInfo", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "회원정보 최신화 진행", description = "클라이언트 요청시 요청에 포함된 유저정보 해당하는 유저의 정보로 db를 업데이트")
-    public ResponseEntity<UserCrudResponseDto> modifyUser(@Valid @RequestBody UserCrudRequestDto input, BindingResult bindingResult)
+    public ResponseEntity<UserCrudResponseDto> modifyUserInfo(@Valid @RequestBody UserCrudRequestDto input, BindingResult bindingResult)
     {
         System.out.println("유저정보 변경 요청");
         if (bindingResult.hasErrors()) {
