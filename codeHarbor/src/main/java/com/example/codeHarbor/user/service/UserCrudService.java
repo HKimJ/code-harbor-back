@@ -2,6 +2,7 @@ package com.example.codeHarbor.user.service;
 
 import com.example.codeHarbor.child.domain.UserGroupDomain;
 import com.example.codeHarbor.child.repository.UserGroupRepository;
+import com.example.codeHarbor.group.domain.GroupDomain;
 import com.example.codeHarbor.group.repository.GroupRepository;
 import com.example.codeHarbor.tool.javamail.JavaMailService;
 import com.example.codeHarbor.user.domain.UserDomain;
@@ -93,7 +94,12 @@ public class UserCrudService {
             newUser.setUserId(input.getUserId());
             newUser.setUserNickname(input.getUserNickname());
             newUser.setUserPassword(input.getUserPassword());
+
+            UserGroupDomain baseEntry = new UserGroupDomain();
+            baseEntry.setUser(newUser);
+            baseEntry.setGroup(null);
             userRepo.save(newUser);
+            userGroupRepo.save(baseEntry);
 
             response.setSuccess(true);
             data.put("msg", "회원 가입에 성공했습니다.");
@@ -139,12 +145,12 @@ public class UserCrudService {
         Map<String, Object> data = new HashMap<>();
         try {
             if(input.getUserId() != null) {
-                UserGroupDomain refreshingUser = userGroupRepo.findUserGroupByUserAndGroup(userRepo.findUserByUserId(input.getUserId()), groupRepo.findGroupByGroupName(input.getUserGroupName()));
+                UserGroupDomain refreshingUser = userGroupRepo.findUserGroupByUser(userRepo.findUserByUserId(input.getUserId()));
                 response.setSuccess(true);
                 data.put("userId", refreshingUser.getUser().getUserId());
                 data.put("userNickname", refreshingUser.getUser().getUserNickname());
                 data.put("userGroupname", refreshingUser.getGroup().getGroupName());
-                data.put("msg", "유저정보 최신화 성공");
+                data.put("msg", "최신화된 유저정보 조회");
                 response.setData(data);
             } else {
                 response.setSuccess(false);
