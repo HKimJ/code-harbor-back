@@ -8,6 +8,7 @@ import java.util.Map;
 @Getter
 @ToString
 @Builder
+@RequiredArgsConstructor
 public class GroupCrudResponseDto {
     @Schema(description = "그룹 crud 요청에 대한 성공여부", example = "true")
     private final boolean success;
