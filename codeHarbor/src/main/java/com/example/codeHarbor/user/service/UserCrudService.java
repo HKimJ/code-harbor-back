@@ -146,12 +146,15 @@ public class UserCrudService {
         try {
             if(input.getUserId() != null) {
                 UserGroupDomain refreshingUser = userGroupRepo.findUserGroupByUser(userRepo.findUserByUserId(input.getUserId()));
+                if (refreshingUser.getGroup() == null) {
+                    data.put("userGroupname", "현재 그룹이 없습니다.");
+                } else {
+                    data.put("userGroupname", refreshingUser.getGroup().getGroupName());
+                }
                 response.setSuccess(true);
                 data.put("userId", refreshingUser.getUser().getUserId());
                 data.put("userNickname", refreshingUser.getUser().getUserNickname());
-                if (refreshingUser.getGroup() != null) {
-                    data.put("userGroupname", refreshingUser.getGroup().getGroupName());
-                }
+
                 data.put("msg", "최신화된 유저정보 조회");
                 response.setData(data);
             } else {
