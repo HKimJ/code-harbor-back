@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface UserGroupRepository extends JpaRepository<UserGroupDomain, Long> {
     UserGroupDomain findUserGroupByUserAndGroup(UserDomain user, GroupDomain group);
+    UserGroupDomain findUserGroupByUser(UserDomain user);
     boolean existsByUserAndGroup(UserDomain user, GroupDomain group);
 
     UserGroupDomain save(UserGroupDomain user_Group);
