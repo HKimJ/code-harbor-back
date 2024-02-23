@@ -149,7 +149,9 @@ public class UserCrudService {
                 response.setSuccess(true);
                 data.put("userId", refreshingUser.getUser().getUserId());
                 data.put("userNickname", refreshingUser.getUser().getUserNickname());
-                data.put("userGroupname", refreshingUser.getGroup().getGroupName());
+                if (refreshingUser.getGroup() != null) {
+                    data.put("userGroupname", refreshingUser.getGroup().getGroupName());
+                }
                 data.put("msg", "최신화된 유저정보 조회");
                 response.setData(data);
             } else {
