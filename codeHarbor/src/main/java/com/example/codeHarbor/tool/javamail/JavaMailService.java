@@ -107,10 +107,10 @@ public class JavaMailService {
         StringBuilder content = new StringBuilder();
         content.append("<h1> [ ").append(groupName).append(" ] 그룹에서 사용자를 초대하려고 합니다.</h1>")
                 .append("<h2> 하단의 링크를 눌러 초대를 수락해주세요. </h2>")
-                .append("<form action=").append(acceptUrl).append(" method=\"post\">")
+                .append("<form action=\"").append(acceptUrl).append("\" method=\"post\">")
                 .append("<input type=\"hidden\" name=\"groupInvitee\" value=\"").append(email).append("\">")
                 .append("<input type=\"hidden\" name=\"groupName\" value=\"").append(groupName).append("\">")
-                .append("<input type=\"hidden\" name=\"verify\" value=\"").append(verifyValue).append("\">")
+                .append("<input type=\"hidden\" name=\"groupInviteVerify\" value=\"").append(verifyValue).append("\">")
                 .append("<button type=\"submit\">Accept</button>")
                 .append("</form>");
         try {
@@ -139,7 +139,7 @@ public class JavaMailService {
         StringBuilder content = new StringBuilder();
         content.append("<h1> [ ").append(groupName).append(" ] 그룹에서 사용자를 초대하려고 합니다.</h1>")
                 .append("<h2> 서비스를 이용하시려면 하단 링크를 클릭해 CodeHarbor에 가입해주세요. </h2>")
-                .append("<form action=").append(redirectUrl).append(" method=\"post\">")
+                .append("<form action=").append(redirectUrl).append(" method=\"POST\">")
                 .append("<input type=\"hidden\" name=\"groupName\" value=\"").append(groupName).append("\">")
                 .append("<input type=\"hidden\" name=\"groupInvitee\" value=\"").append(email).append("\">")
                 .append("<button type=\"submit\">Accept</button>")
