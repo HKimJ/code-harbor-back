@@ -19,8 +19,6 @@ public class GroupDomain {
     private String groupCreator;
     @Column(columnDefinition = "VARCHAR(30)", unique = true)
     private String groupName;
-//    @Column(columnDefinition = "json")
-//    private HashSet<String> groupMember;
     @Temporal(value = TemporalType.DATE) @Column(columnDefinition = "DATE DEFAULT (CURRENT_DATE)", insertable = false, updatable = false)
     private Date groupCreatedate;
 
