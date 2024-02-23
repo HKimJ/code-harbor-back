@@ -14,11 +14,14 @@ import org.jetbrains.annotations.Nullable;
 @AllArgsConstructor
 public class UserCrudRequestDto {
     @Email @Nullable
-    @Schema(description = "클라이언트에서 입력한 메일 형태의 이용자 ID", example = "test@naver.com")
+    @Schema(description = "클라이언트에서 입력하거나 현재 이용자의 메일 형태의 이용자 ID", example = "test@naver.com")
     private String userId;
     @Nullable
-    @Schema(description = "클라이언트에서 입력한 이용자 닉네임", example = "tester1")
+    @Schema(description = "클라이언트에서 입력하거나 현재 이용자의 닉네임", example = "tester1")
     private String userNickname;
+    @Nullable
+    @Schema(description = "클라이언트에서 입력하거나 현재 이용자의 닉네임", example = "myGroupName")
+    private String userGroupName;
     @Nullable
     @Schema(description = "클라이언트에서 입력한 이용자 비밀번호", example = "testPw")
     private String userPassword;
