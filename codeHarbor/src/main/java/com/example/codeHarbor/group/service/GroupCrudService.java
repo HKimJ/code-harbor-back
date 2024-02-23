@@ -1,5 +1,6 @@
 package com.example.codeHarbor.group.service;
 
+import com.example.codeHarbor.child.domain.UserGroupDomain;
 import com.example.codeHarbor.child.repository.UserGroupRepository;
 import com.example.codeHarbor.group.domain.GroupDomain;
 import com.example.codeHarbor.group.dto.GroupCrudRequestDto;
@@ -81,9 +82,12 @@ public class GroupCrudService {
     public GroupCrudResponseDto acceptExistUserAsMember(GroupCrudRequestDto input) {
         GroupCrudResponseDto response;
         Map<String, Object> data = new HashMap<>();
+        UserGroupDomain user_Group = new UserGroupDomain();
         try {
             if (redisService.retrieveDataFromRedis(input.getGroupInvitee()) == input.getGroupInviteVerify()) {
-                userGroupRepo.save(userRepo.findUserByUserId(input.getGroupInvitee()), groupRepo.findGroupByGroupName(input.getGroupName()));
+                user_Group.setUser(userRepo.findUserByUserId(input.getGroupInvitee()));
+                user_Group.setGroup(groupRepo.findGroupByGroupName(input.getGroupName()));
+                userGroupRepo.save(user_Group);
                 data.put("msg", "회원을 그룹에 초대했습니다.");
                 response = GroupCrudResponseDto.builder().success(true).data(data).build();
             } else {

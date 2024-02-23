@@ -11,5 +11,5 @@ public interface UserGroupRepository extends JpaRepository<UserGroupDomain, Long
     UserGroupDomain findUserGroupByUserAndGroup(UserDomain user, GroupDomain group);
     boolean existsByUserAndGroup(UserDomain user, GroupDomain group);
 
-    UserGroupDomain save(UserDomain user, GroupDomain group);
+    UserGroupDomain save(UserGroupDomain user_Group);
 }
