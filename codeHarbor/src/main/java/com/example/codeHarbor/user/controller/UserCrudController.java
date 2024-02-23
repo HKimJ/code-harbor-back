@@ -180,6 +180,70 @@ public class UserCrudController {
         UserCrudResponseDto response = crudService.findPassword(input);
         return ResponseEntity.ok(response);
     }
+    @io.swagger.v3.oas.annotations.parameters.RequestBody (content = @Content(
+            examples = {
+                    @ExampleObject(name = "Example", value = """ 
+                { 
+                    "userId" : "test@example@test.com" 
+                } 
+            """)}))
+    @PostMapping(value = "/refreshUser", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "회원정보 최신화 진행", description = "클라이언트 요청시 요청에 포함된 userId에 해당하는 유저의 최신화 정보를 전달")
+    public ResponseEntity<UserCrudResponseDto> refreshUser(@Valid @RequestBody UserCrudRequestDto input, BindingResult bindingResult)
+    {
+        System.out.println("최신화된 유저정보 요청");
+        if (bindingResult.hasErrors()) {
+            UserCrudResponseDto response = new UserCrudResponseDto();
+            Map<String, Object> data = new HashMap<>();
+            List<FieldError> errors = bindingResult.getFieldErrors();
+            for (FieldError error : errors) {
+                String fieldName = error.getField();
+                String errorMsg = error.getDefaultMessage();
+                System.out.println("입력 유효성 검증 실패 - 필드명: " + fieldName + ", 에러메세지: " + errorMsg);
+            }
+            response.setSuccess(false);
+            data.put("msg", "올바른 매개변수명이나 형식이 전달되지 않았습니다.");
+            response.setData(data);
+            return ResponseEntity.ok(response);
+        }
+        UserCrudResponseDto response = crudService.refreshUser(input);
+        return ResponseEntity.ok(response);
+    }
+
+    @io.swagger.v3.oas.annotations.parameters.RequestBody (content = @Content(
+            examples = {
+                    @ExampleObject(name = "Example", value = """ 
+                { 
+                    "userId" : "test@example@test.com" ,
+                    "userGroupname" : "newGroupName" / null,
+                    "userNickname" : "newNickname" / null,
+                    "userPassword" : "newPassword" / null,
+                    etc...
+                } 
+            """)}))
+    @PostMapping(value = "/modifyUser", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "회원정보 최신화 진행", description = "클라이언트 요청시 요청에 포함된 유저정보 해당하는 유저의 정보로 db를 업데이트")
+    public ResponseEntity<UserCrudResponseDto> modifyUser(@Valid @RequestBody UserCrudRequestDto input, BindingResult bindingResult)
+    {
+        System.out.println("유저정보 변경 요청");
+        if (bindingResult.hasErrors()) {
+            UserCrudResponseDto response = new UserCrudResponseDto();
+            Map<String, Object> data = new HashMap<>();
+            List<FieldError> errors = bindingResult.getFieldErrors();
+            for (FieldError error : errors) {
+                String fieldName = error.getField();
+                String errorMsg = error.getDefaultMessage();
+                System.out.println("입력 유효성 검증 실패 - 필드명: " + fieldName + ", 에러메세지: " + errorMsg);
+            }
+            response.setSuccess(false);
+            data.put("msg", "올바른 매개변수명이나 형식이 전달되지 않았습니다.");
+            response.setData(data);
+            return ResponseEntity.ok(response);
+        }
+        UserCrudResponseDto response = crudService.modifyUserInfo(input);
+        return ResponseEntity.ok(response);
+    }
+
 
 //    @PostMapping(value = "/signupSNS", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 //    @Operation(summary = "SNS 회원가입 진행", description = "SNS 고유값을 받아 회원가입 처리")
