@@ -20,7 +20,10 @@ public class UserLoginResponseDto {
 
     @Schema(description = "로그인 성공시 key, value로 유저 데이터 전송<br>" +
             "로그인 실패시 실패 메시지 전달",
-            example = "data.userId: test@naver.com " + "data.userNickname: test " + "data.msg: 아이디나 비밀번호가 일치하지 않습니다.")
+            example = "data.userId: test@naver.com " +
+                    "data.userNickname: test " +
+                    "data.userGroupName : myGroup" +
+                    "data.msg: 아이디나 비밀번호가 일치하지 않습니다.")
     @NotNull
     private Map<String, Object> data;
 
