@@ -15,10 +15,11 @@ import java.util.Objects;
 @AllArgsConstructor
 public class UserDomain {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long userSeq;
     @Column(columnDefinition = "VARCHAR(50)",unique = true, updatable = false)
     private String userId;
+//    @Column(columnDefinition = "INT AUTO_INCREMENT", unique = true)
+//    @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    private Long userNum;
     @Column(columnDefinition = "VARCHAR(20)", unique = true)
     private String userNickname;
     @Column(columnDefinition = "VARCHAR(20)")
