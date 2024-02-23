@@ -52,9 +52,14 @@ public class GroupCrudService {
         Map<String, Object> data = new HashMap<>();
         try {
             GroupDomain newGroup = new GroupDomain();
+            UserGroupDomain relation = new UserGroupDomain();
             newGroup.setGroupCreator(input.getGroupCreator());
             newGroup.setGroupName(input.getGroupName());
+
+            relation.setUser(userRepo.findUserByUserId(input.getGroupCreator()));
+            relation.setGroup(newGroup);
             groupRepo.save(newGroup);
+            userGroupRepo.save(relation);
             data.put("mst", "그룹 생성에 성공했습니다.");
             response = GroupCrudResponseDto.builder().success(true).data(data).build();
 
@@ -86,7 +91,7 @@ public class GroupCrudService {
                         response = mailSender.sendSignUpMail(input.getGroupInvitee(), input.getGroupName(), REDIRECT_URL);
                     }
                 } else {
-                    data.put("msg", "이미 초대된 그룹원입니다.");
+                    data.put("msg", "이미 그룹에 가입된 이용자입니다.");
                     response = GroupCrudResponseDto.builder().success(false).data(data).build();
                 }
 
