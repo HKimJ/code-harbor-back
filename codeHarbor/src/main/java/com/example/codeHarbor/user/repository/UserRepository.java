@@ -9,6 +9,7 @@ import java.util.Set;
 public interface UserRepository extends JpaRepository<UserDomain, Long> {
 //    UserDomain findUserByUserSeq(Long userSeq); 필요시 추가
     UserDomain findUserByUserId(String userId);
+    UserDomain findUserByUserNickname(String userNickname);
     boolean existsByUserId(String userId);
 
     boolean existsByUserNickname(String userNickname);
