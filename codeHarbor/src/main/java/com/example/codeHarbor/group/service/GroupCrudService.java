@@ -8,6 +8,7 @@ import com.example.codeHarbor.group.dto.GroupCrudResponseDto;
 import com.example.codeHarbor.group.repository.GroupRepository;
 import com.example.codeHarbor.tool.javamail.JavaMailService;
 import com.example.codeHarbor.tool.redis.RedisService;
+import com.example.codeHarbor.user.domain.UserDomain;
 import com.example.codeHarbor.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -52,15 +53,15 @@ public class GroupCrudService {
         Map<String, Object> data = new HashMap<>();
         try {
             GroupDomain newGroup = new GroupDomain();
-            UserGroupDomain relation = new UserGroupDomain();
+            UserDomain user = userRepo.findUserByUserId(input.getGroupCreator());
+            UserGroupDomain relation = userGroupRepo.findUserGroupByUser(user);
             newGroup.setGroupCreator(input.getGroupCreator());
             newGroup.setGroupName(input.getGroupName());
 
-            relation.setUser(userRepo.findUserByUserId(input.getGroupCreator()));
             relation.setGroup(newGroup);
             groupRepo.save(newGroup);
             userGroupRepo.save(relation);
-            data.put("mst", "그룹 생성에 성공했습니다.");
+            data.put("msg", "그룹 생성에 성공했습니다.");
             response = GroupCrudResponseDto.builder().success(true).data(data).build();
 
         } catch (Exception e) {
