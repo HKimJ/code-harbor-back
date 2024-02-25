@@ -13,6 +13,7 @@ import com.example.codeHarbor.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,8 +26,8 @@ public class GroupCrudService {
     private final JavaMailService mailSender;
     private final RedisService redisService;
 //    private final String ACCEPT_NEW_URL = "127.0.0.1:8081/GroupCrud/verifyAcceptNew";
-    private final String ACCEPT_EXIST_URL = "/GroupCrud/acceptExistMember";
-    private final String REDIRECT_URL = "127.0.0.1:5173/GroupCrud/signUp";
+//    private final String ACCEPT_EXIST_URL = "/GroupCrud/acceptExistMember";
+    private final String REDIRECT_URL = "127.0.0.1:5173/login";
 
     public GroupCrudResponseDto checkGroupName(GroupCrudRequestDto input) {
         GroupCrudResponseDto response;
@@ -34,7 +35,7 @@ public class GroupCrudService {
         try {
             if (!groupRepo.existsByGroupName(input.getGroupName())) {
 
-                data.put("mst", "사용 가능한 그룹명입니다.");
+                data.put("msg", "사용 가능한 그룹명입니다.");
                 response = GroupCrudResponseDto.builder().success(true).data(data).build();
             } else {
                 data.put("msg", "이미 존재하는 그룹 이름입니다.");
@@ -51,14 +52,24 @@ public class GroupCrudService {
     public GroupCrudResponseDto createGroup(GroupCrudRequestDto input) {
         GroupCrudResponseDto response;
         Map<String, Object> data = new HashMap<>();
+        if (!input.isChecked()) {
+            data.put("msg", "그룹 이름 중복확인이 되지 않았습니다.");
+            response = GroupCrudResponseDto.builder().success(true).data(data).build();
+            return response;
+        }
         try {
             GroupDomain newGroup = new GroupDomain();
-            UserDomain user = userRepo.findUserByUserId(input.getGroupCreator());
-            UserGroupDomain relation = userGroupRepo.findUserGroupByUser(user);
+            UserDomain groupCreator = userRepo.findUserByUserId(input.getGroupCreator());
             newGroup.setGroupCreator(input.getGroupCreator());
             newGroup.setGroupName(input.getGroupName());
-
-            relation.setGroup(newGroup);
+            UserGroupDomain relation = new UserGroupDomain();
+            relation.setUser(groupCreator);
+            relation.setJoinedGroup(newGroup);
+            relation.setAccepted(true);
+            newGroup.setGroupMembers(new ArrayList<>() {{
+                add(relation);
+            }}
+            );
             groupRepo.save(newGroup);
             userGroupRepo.save(relation);
             data.put("msg", "그룹 생성에 성공했습니다.");
@@ -82,11 +93,11 @@ public class GroupCrudService {
         } else {
             try {
                 currentGroup = groupRepo.findGroupByGroupName(input.getGroupName());
-                if (!userGroupRepo.existsByUserAndGroup(userRepo.findUserByUserId(input.getGroupInvitee()), currentGroup)) {
+                if (!userGroupRepo.existsByUserAndJoinedGroup(userRepo.findUserByUserId(input.getGroupInvitee()), currentGroup)) {
                     if (userRepo.findUserByUserId(input.getGroupInvitee()) != null) {
                         String verifyValue = redisService.generateCode("temp");
-                        // 초대 메일 보내는 로직
-                        response = mailSender.sendGroupInvitaiondMail(input.getGroupInvitee(), input.getGroupName(), ACCEPT_EXIST_URL, verifyValue);
+                        // 초대 확인 메일 보내는 로직
+                        response = mailSender.sendGroupInvitaiondMail(input.getGroupInvitee(), input.getGroupName(), REDIRECT_URL);
                     } else {
                         // 가입 메일 보내는 로직 + 가입 후 자동으로 그룹에 포함시키는 로직(추가 예정)
                         response = mailSender.sendSignUpMail(input.getGroupInvitee(), input.getGroupName(), REDIRECT_URL);
@@ -117,7 +128,7 @@ public class GroupCrudService {
 
             if (input.getGroupInviteVerify().equals(redisService.retrieveDataFromRedis(input.getGroupInvitee()))) {
                 user_Group.setUser(userRepo.findUserByUserId(input.getGroupInvitee()));
-                user_Group.setGroup(groupRepo.findGroupByGroupName(input.getGroupName()));
+                user_Group.setJoinedGroup(groupRepo.findGroupByGroupName(input.getGroupName()));
                 userGroupRepo.save(user_Group);
                 data.put("msg", "회원을 그룹에 초대했습니다.");
                 response = GroupCrudResponseDto.builder().success(true).data(data).build();
