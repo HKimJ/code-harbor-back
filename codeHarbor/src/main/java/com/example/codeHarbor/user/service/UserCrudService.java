@@ -6,13 +6,16 @@ import com.example.codeHarbor.group.domain.GroupDomain;
 import com.example.codeHarbor.group.repository.GroupRepository;
 import com.example.codeHarbor.tool.javamail.JavaMailService;
 import com.example.codeHarbor.user.domain.UserDomain;
+import com.example.codeHarbor.user.domain.UserMessageDomain;
 import com.example.codeHarbor.user.dto.UserCrudRequestDto;
 import com.example.codeHarbor.user.dto.UserCrudResponseDto;
+import com.example.codeHarbor.user.repository.UserMessageRepository;
 import com.example.codeHarbor.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -23,6 +26,7 @@ public class UserCrudService {
     private final UserRepository userRepo;
     private final GroupRepository groupRepo;
     private final UserGroupRepository userGroupRepo;
+    private final UserMessageRepository userMessageRepo;
     private final JavaMailService mailSender;
     public UserCrudResponseDto checkId(UserCrudRequestDto input) {
         String id = input.getUserId();
@@ -94,12 +98,21 @@ public class UserCrudService {
             newUser.setUserId(input.getUserId());
             newUser.setUserNickname(input.getUserNickname());
             newUser.setUserPassword(input.getUserPassword());
+//            if (!groupRepo.existsByGroupName("NOT_A_GROUP")) {
+//                GroupDomain initialGroup = new GroupDomain();
+//                initialGroup.setGroupName("NOT_A_GROUP");
+//                initialGroup.setGroupCreator("TEMP");
+//                groupRepo.save(initialGroup);
+//            }
 
-            UserGroupDomain baseEntry = new UserGroupDomain();
-            baseEntry.setUser(newUser);
-            baseEntry.setGroup(null);
+//            UserGroupDomain baseEntry = new UserGroupDomain();
+//            baseEntry.setUser(newUser);
+//            baseEntry.setJoinedGroup(groupRepo.findGroupByGroupName("NOT_A_GROUP"));
             userRepo.save(newUser);
-            userGroupRepo.save(baseEntry);
+//            userGroupRepo.save(baseEntry);
+
+
+
 
             response.setSuccess(true);
             data.put("msg", "회원 가입에 성공했습니다.");
@@ -140,45 +153,15 @@ public class UserCrudService {
         return response;
     }
 
-    public UserCrudResponseDto latestUserInfo(UserCrudRequestDto input) {
-        UserCrudResponseDto response = new UserCrudResponseDto();
-        Map<String, Object> data = new HashMap<>();
-        try {
-            if(input.getUserId() != null) {
-                UserGroupDomain refreshingUser = userGroupRepo.findUserGroupByUser(userRepo.findUserByUserId(input.getUserId()));
-                if (refreshingUser.getGroup() == null) {
-                    data.put("userGroupname", "현재 그룹이 없습니다.");
-                } else {
-                    data.put("userGroupname", refreshingUser.getGroup().getGroupName());
-                }
-                response.setSuccess(true);
-                data.put("userId", refreshingUser.getUser().getUserId());
-                data.put("userNickname", refreshingUser.getUser().getUserNickname());
-
-                data.put("msg", "최신화된 유저정보 조회");
-                response.setData(data);
-            } else {
-                response.setSuccess(false);
-                data.put("msg", "올바르지 않은 이용자 요청입니다");
-                response.setData(data);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            response.setSuccess(false);
-            data.put("msg", "유저정보 최신화 중 알수없는 문제가 발생했습니다. 지속시 관리자에게 연락해주세요.");
-            response.setData(data);
-        }
-        return response;
-    }
 
     public UserCrudResponseDto modifyUserInfo(UserCrudRequestDto input) {
         UserCrudResponseDto response = new UserCrudResponseDto();
         Map<String, Object> data = new HashMap<>();
         try {
             if(input.getUserId() != null) {
-                UserGroupDomain refreshingUser = userGroupRepo.findUserGroupByUserAndGroup(userRepo.findUserByUserId(input.getUserId()), groupRepo.findGroupByGroupName(input.getUserGroupName()));
-                if (!input.getUserGroupName().equals(refreshingUser.getGroup().getGroupName())) {
-                    refreshingUser.setGroup(groupRepo.findGroupByGroupName(input.getUserGroupName()));
+                UserGroupDomain refreshingUser = userGroupRepo.findUserGroupByUserAndJoinedGroup(userRepo.findUserByUserId(input.getUserId()), groupRepo.findGroupByGroupName(input.getUserGroupName()));
+                if (!input.getUserGroupName().equals(refreshingUser.getJoinedGroup().getGroupName())) {
+                    refreshingUser.setJoinedGroup(groupRepo.findGroupByGroupName(input.getUserGroupName()));
                 }
                 if (!input.getUserNickname().equals(refreshingUser.getUser().getUserNickname())) {
                     refreshingUser.setUser(userRepo.findUserByUserNickname(input.getUserNickname()));
@@ -189,7 +172,7 @@ public class UserCrudService {
                 userRepo.save(refreshingUser.getUser());
                 response.setSuccess(true);
                 data.put("userNickname", refreshingUser.getUser().getUserNickname());
-                data.put("userGroupname", refreshingUser.getGroup().getGroupName());
+                data.put("userGroupname", refreshingUser.getJoinedGroup().getGroupName());
                 data.put("msg", "유저정보 최신화 성공");
                 response.setData(data);
             } else {
@@ -205,6 +188,38 @@ public class UserCrudService {
         }
         return response;
     }
+
+    public UserCrudResponseDto showNewMessages(UserCrudRequestDto input) {
+        UserCrudResponseDto response = new UserCrudResponseDto();
+        Map<String, Object> data = new HashMap<>();
+        try {
+            if(input.getUserId() != null) {
+                List<UserMessageDomain> newMessageList = userMessageRepo.findAllByMessageOwnerAndIsRead(userRepo.findUserByUserId(input.getUserId()), false);
+                Map<Long, String[]> newMessageMap = new HashMap<>();
+                for (UserMessageDomain newMessage : newMessageList) {
+                    newMessageMap.put(
+                            newMessage.getMessage().getMsgId(),
+                            new String[]{newMessage.getMessage().getMsgType(), newMessage.getMessage().getMsgContent()}
+                    );
+                }
+                data.put("newMessageMap", newMessageMap);
+                data.put("msg", "읽지 않은 메세지 목록 Map<id, String[type, content]>로 전달");
+                response.setData(data);
+            } else {
+                response.setSuccess(false);
+                data.put("msg", "올바르지 않은 이용자 요청입니다");
+                response.setData(data);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.setSuccess(false);
+            data.put("msg", "새 메세지 목록을 조회하는 과정에서 알수없는 문제가 발생했습니다. 지속시 관리자에게 연락해주세요.");
+            response.setData(data);
+        }
+        return response;
+    }
+
+
     public boolean isEmail(String input) {
         final String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
         Pattern pattern = Pattern.compile(emailRegex);
