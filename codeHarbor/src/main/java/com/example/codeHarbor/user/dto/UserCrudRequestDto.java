@@ -8,26 +8,23 @@ import org.jetbrains.annotations.Nullable;
 
 @Getter
 @ToString
-@Builder
-@Jacksonized
-@NoArgsConstructor
 @AllArgsConstructor
 public class UserCrudRequestDto {
     @Email @Nullable
     @Schema(description = "클라이언트에서 입력하거나 현재 이용자의 메일 형태의 이용자 ID", example = "test@naver.com")
-    private String userId;
+    private final String userId;
     @Nullable
     @Schema(description = "클라이언트에서 입력하거나 현재 이용자의 닉네임", example = "tester1")
-    private String userNickname;
+    private final String userNickname;
     @Nullable
     @Schema(description = "클라이언트에서 입력하거나 현재 이용자의 닉네임", example = "myGroupName")
-    private String userGroupName;
+    private final String userGroupName;
     @Nullable
     @Schema(description = "클라이언트에서 입력한 이용자 비밀번호", example = "testPw")
-    private String userPassword;
+    private final String userPassword;
     @Nullable
     @Schema(description = "클라이언트에서 입력한 이메일 인증코드", example = "1234")
-    private String verifyCode;
+    private final String verifyCode;
 
 
 //    public void setUserId(String userId) {
