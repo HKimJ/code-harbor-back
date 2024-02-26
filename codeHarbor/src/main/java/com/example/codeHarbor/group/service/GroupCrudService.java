@@ -93,7 +93,7 @@ public class GroupCrudService {
         } else {
             try {
                 currentGroup = groupRepo.findGroupByGroupName(input.getGroupName());
-                if (!userGroupRepo.existsByUserAndJoinedGroup(userRepo.findUserByUserId(input.getGroupInvitee()), currentGroup)) {
+                if (!userGroupRepo.existsAllByUserAndJoinedGroup(userRepo.findUserByUserId(input.getGroupInvitee()), currentGroup)) {
                     if (userRepo.findUserByUserId(input.getGroupInvitee()) != null) {
                         String verifyValue = redisService.generateCode("temp");
                         // 초대 확인 메일 보내는 로직
