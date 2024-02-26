@@ -159,7 +159,7 @@ public class UserCrudService {
         Map<String, Object> data = new HashMap<>();
         try {
             if(input.getUserId() != null) {
-                UserGroupDomain refreshingUser = userGroupRepo.findUserGroupByUserAndJoinedGroup(userRepo.findUserByUserId(input.getUserId()), groupRepo.findGroupByGroupName(input.getUserGroupName()));
+                UserGroupDomain refreshingUser = userGroupRepo.findAllByUserAndJoinedGroup(userRepo.findUserByUserId(input.getUserId()), groupRepo.findGroupByGroupName(input.getUserGroupName()));
                 if (!input.getUserGroupName().equals(refreshingUser.getJoinedGroup().getGroupName())) {
                     refreshingUser.setJoinedGroup(groupRepo.findGroupByGroupName(input.getUserGroupName()));
                 }
