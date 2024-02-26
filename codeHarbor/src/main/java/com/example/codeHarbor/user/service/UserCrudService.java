@@ -5,15 +5,18 @@ import com.example.codeHarbor.child.repository.UserGroupRepository;
 import com.example.codeHarbor.group.domain.GroupDomain;
 import com.example.codeHarbor.group.repository.GroupRepository;
 import com.example.codeHarbor.tool.javamail.JavaMailService;
+import com.example.codeHarbor.user.domain.MessageDomain;
 import com.example.codeHarbor.user.domain.UserDomain;
 import com.example.codeHarbor.user.domain.UserMessageDomain;
 import com.example.codeHarbor.user.dto.UserCrudRequestDto;
 import com.example.codeHarbor.user.dto.UserCrudResponseDto;
+import com.example.codeHarbor.user.repository.MessageRepository;
 import com.example.codeHarbor.user.repository.UserMessageRepository;
 import com.example.codeHarbor.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +28,7 @@ import java.util.regex.Pattern;
 public class UserCrudService {
     private final UserRepository userRepo;
     private final GroupRepository groupRepo;
+    private final MessageRepository messageRepo;
     private final UserGroupRepository userGroupRepo;
     private final UserMessageRepository userMessageRepo;
     private final JavaMailService mailSender;
@@ -98,21 +102,18 @@ public class UserCrudService {
             newUser.setUserId(input.getUserId());
             newUser.setUserNickname(input.getUserNickname());
             newUser.setUserPassword(input.getUserPassword());
-//            if (!groupRepo.existsByGroupName("NOT_A_GROUP")) {
-//                GroupDomain initialGroup = new GroupDomain();
-//                initialGroup.setGroupName("NOT_A_GROUP");
-//                initialGroup.setGroupCreator("TEMP");
-//                groupRepo.save(initialGroup);
-//            }
-
-//            UserGroupDomain baseEntry = new UserGroupDomain();
-//            baseEntry.setUser(newUser);
-//            baseEntry.setJoinedGroup(groupRepo.findGroupByGroupName("NOT_A_GROUP"));
+            newUser.setHasNewMsg(true);
             userRepo.save(newUser);
-//            userGroupRepo.save(baseEntry);
 
+            MessageDomain newMsg = new MessageDomain();
+            newMsg.setMsgType("WELCOME_MSG");
+            newMsg.setMsgContent(newUser.getUserNickname() + "님의 CodeHarbor 가입을 축하드립니다!");
+            messageRepo.save(newMsg);
 
-
+            UserMessageDomain connecting = new UserMessageDomain();
+            connecting.setMessageOwner(newUser);
+            connecting.setMessage(newMsg);
+            userMessageRepo.save(connecting);
 
             response.setSuccess(true);
             data.put("msg", "회원 가입에 성공했습니다.");
@@ -204,6 +205,37 @@ public class UserCrudService {
                 }
                 data.put("newMessageMap", newMessageMap);
                 data.put("msg", "읽지 않은 메세지 목록 Map<id, String[type, content]>로 전달");
+                response.setData(data);
+            } else {
+                response.setSuccess(false);
+                data.put("msg", "올바르지 않은 이용자 요청입니다");
+                response.setData(data);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.setSuccess(false);
+            data.put("msg", "새 메세지 목록을 조회하는 과정에서 알수없는 문제가 발생했습니다. 지속시 관리자에게 연락해주세요.");
+            response.setData(data);
+        }
+        return response;
+    }
+
+    public UserCrudResponseDto readAllMessages(UserCrudRequestDto input) {
+        UserCrudResponseDto response = new UserCrudResponseDto();
+        Map<String, Object> data = new HashMap<>();
+        try {
+            if(input.getUserId() != null) {
+                UserDomain currentUser = userRepo.findUserByUserId(input.getUserId());
+                List<UserMessageDomain> newMessageList = userMessageRepo.findAllByMessageOwnerAndIsRead(userRepo.findUserByUserId(input.getUserId()), false);
+                List<UserMessageDomain> resetList = new ArrayList<>();
+                for (UserMessageDomain newMessage : newMessageList) {
+                    newMessage.setRead(true);
+                    userMessageRepo.save(newMessage); // 이 부분 성능문제 해결해야함
+                }
+                currentUser.setHasNewMsg(false);
+                userRepo.save(currentUser);
+
+                data.put("msg", "읽지 않은 메세지들을 읽음처리 했습니다.");
                 response.setData(data);
             } else {
                 response.setSuccess(false);
