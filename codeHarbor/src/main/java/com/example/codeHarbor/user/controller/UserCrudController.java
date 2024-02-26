@@ -213,26 +213,35 @@ public class UserCrudController {
         return ResponseEntity.ok(response);
     }
 
+    @io.swagger.v3.oas.annotations.parameters.RequestBody (content = @Content(
+            examples = {
+                    @ExampleObject(name = "Example", value = """ 
+                { 
+                    "userId" : "test@example@test.com" 
+                } 
+            """)}))
+    @PostMapping(value = "/readAllMessages", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "메세지를 읽고 난 후 해당하는 유저의 새 매세지 정보를 초기화", description = "클라이언트의 요청에 포함된 userId 해당하는 유저의 읽지 않은 메세지 정보를 읽음으로 초기화 후 응답")
+    public ResponseEntity<UserCrudResponseDto> readAllMessages(@Valid @RequestBody UserCrudRequestDto input, BindingResult bindingResult)
+    {
+        System.out.println("메세지 읽음처리 요청");
+        if (bindingResult.hasErrors()) {
+            UserCrudResponseDto response = new UserCrudResponseDto();
+            Map<String, Object> data = new HashMap<>();
+            List<FieldError> errors = bindingResult.getFieldErrors();
+            for (FieldError error : errors) {
+                String fieldName = error.getField();
+                String errorMsg = error.getDefaultMessage();
+                System.out.println("입력 유효성 검증 실패 - 필드명: " + fieldName + ", 에러메세지: " + errorMsg);
+            }
+            response.setSuccess(false);
+            data.put("msg", "올바른 매개변수명이나 형식이 전달되지 않았습니다.");
+            response.setData(data);
+            return ResponseEntity.ok(response);
+        }
+        UserCrudResponseDto response = crudService.readAllMessages(input);
+        return ResponseEntity.ok(response);
+    }
 
-//    @PostMapping(value = "/signupSNS", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-//    @Operation(summary = "SNS 회원가입 진행", description = "SNS 고유값을 받아 회원가입 처리")
-//    public ResponseEntity<UserCrudResponseDto> snsSignIn(@Valid @RequestBody @Parameter(description = "SNS 로그인 요청시 받는 SNS 고유값", example = "snsId") UserCrudRequestDto input, BindingResult bindingResult)
-//    {
-//        System.out.println("SNS 회원가입 시도");
-//        if (bindingResult.hasErrors()) {
-//            UserCrudResponseDto response = new UserCrudResponseDto();
-//            List<FieldError> errors = bindingResult.getFieldErrors();
-//            for (FieldError error : errors) {
-//                String fieldName = error.getField();
-//                String errorMsg = error.getDefaultMessage();
-//                System.out.println("입력 유효성 검증 실패 - 필드명: " + fieldName + ", 에러메세지: " + errorMsg);
-//            }
-//            response.setSuccess(false);
-//            response.setData("아이디 혹은 비밀번호가 일치하지 않습니다.");
-//            return ResponseEntity.ok(response);
-//        }
-//        UserCrudResponseDto response = crudService.basicUserCrud(input);
-//        return ResponseEntity.ok(response);
-//    }
 
 }
