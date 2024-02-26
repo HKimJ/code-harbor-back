@@ -3,14 +3,18 @@ package com.example.codeHarbor.user.service;
 import com.example.codeHarbor.child.domain.UserGroupDomain;
 import com.example.codeHarbor.child.repository.UserGroupRepository;
 import com.example.codeHarbor.user.domain.UserDomain;
+import com.example.codeHarbor.user.domain.UserMessageDomain;
 import com.example.codeHarbor.user.dto.UserAuthRequestDto;
 import com.example.codeHarbor.user.dto.UserAuthResponseDto;
 import com.example.codeHarbor.user.dto.UserCrudResponseDto;
+import com.example.codeHarbor.user.repository.MessageRepository;
+import com.example.codeHarbor.user.repository.UserMessageRepository;
 import com.example.codeHarbor.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -19,7 +23,9 @@ import java.util.regex.Pattern;
 @RequiredArgsConstructor
 public class UserAuthService {
     private final UserRepository userRepo;
+    private final MessageRepository messageRepo;
     private final UserGroupRepository userGroupRepo;
+    private final UserMessageRepository userMessageRepo;
 
     public UserAuthResponseDto basicLogin(UserAuthRequestDto input) {
         UserAuthResponseDto response = new UserAuthResponseDto();
@@ -75,11 +81,17 @@ public class UserAuthService {
                         put("groupStatus", refreshingUser.getUserGroupJoinStatus());
                     }});
                 }
+                Map<Long, String[]> newMessageInfo = new HashMap<>();
                 if (refreshingUser.isHasNewMsg()) {
-                    data.put("hasNewMsg", true);
-                } else {
-                    data.put("hasNewMsg", false);
+                    List<UserMessageDomain> newMessageList = userMessageRepo.findAllByMessageOwnerAndIsRead(refreshingUser, false);
+                    for (UserMessageDomain msg : newMessageList) {
+                        String[] temp = new String[2];
+                        temp[0] = msg.getMessage().getMsgType();
+                        temp[1] = msg.getMessage().getMsgContent();
+                        newMessageInfo.put(msg.getUserMessageId(), temp);
+                    }
                 }
+                data.put("newMessageList", newMessageInfo);
                 data.put("msg", "최신화된 유저정보 조회");
                 response.setSuccess(true);
             } else {
