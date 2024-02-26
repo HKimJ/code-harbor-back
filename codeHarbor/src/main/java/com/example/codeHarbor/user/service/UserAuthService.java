@@ -62,28 +62,21 @@ public class UserAuthService {
         Map<String, Object> data = new HashMap<>();
         try {
             if(input.getUserId() != null) {
-                UserGroupDomain refreshingUser = userGroupRepo.findUserGroupByUser(userRepo.findUserByUserId(input.getUserId()));
-                data.put("userId", refreshingUser.getUser().getUserId());
-                data.put("userNickname", refreshingUser.getUser().getUserNickname());
-                data.put("userGroupStatus", new HashMap<String, Object>(){{put("groupStatus", refreshingUser.getUser().getUserGroupJoinStatus());}});
-                if (refreshingUser.getUser().getUserGroupJoinStatus() != 0) {
-                    data.put("userGroupName", refreshingUser.getJoinedGroup().getGroupName());
+                UserDomain refreshingUser = userRepo.findUserByUserId(input.getUserId());
+                data.put("userId", refreshingUser.getUserId());
+                data.put("userNickname", refreshingUser.getUserNickname());
+                data.put("userGroupStatus", new HashMap<String, Object>(){{put("groupStatus", refreshingUser.getUserGroupJoinStatus());}});
+                if (refreshingUser.getUserGroupJoinStatus() != 0) {
+                    UserGroupDomain user_Group = userGroupRepo.findByUser(refreshingUser);
+                    data.put("userGroupName", user_Group.getJoinedGroup().getGroupName());
                 }
-                if (refreshingUser.getUser().isHasNewMsg()) {
+                if (refreshingUser.isHasNewMsg()) {
                     data.put("hasNewMsg", true);
                 } else {
                     data.put("hasNewMsg", false);
                 }
-
-                if (refreshingUser.getJoinedGroup() != null) data.put("userGroupname", refreshingUser.getJoinedGroup().getGroupName());
-
-
-
-                response.setSuccess(true);
-                data.put("userId", refreshingUser.getUser().getUserId());
-                data.put("userNickname", refreshingUser.getUser().getUserNickname());
-
                 data.put("msg", "최신화된 유저정보 조회");
+                response.setSuccess(true);
             } else {
                 response.setSuccess(false);
                 data.put("msg", "올바르지 않은 이용자 요청입니다");
@@ -105,5 +98,4 @@ public class UserAuthService {
         Matcher matcher = pattern.matcher(input);
         return matcher.matches();
     }
-
 }
