@@ -106,7 +106,7 @@ public class JavaMailService {
         String title = "[CodeHarbor 그룹 초대]";
         StringBuilder content = new StringBuilder();
         content.append("<h1> [ ").append(groupName).append(" ] 그룹에서 사용자를 초대하려고 합니다.</h1>")
-                .append("<h2> 하단의 링크를 통해 CodeHarbor로 이동하고 그룹가입 요청을 수락해주세요. </h2>")
+                .append("<h2> 하단의 링크로 CodeHarbor로 이동 후 그룹가입 요청을 수락해주세요. </h2>")
                 .append("<a href=\"").append(redirectUrl).append("\"/>");
         try {
             MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, false, "UTF-8");
