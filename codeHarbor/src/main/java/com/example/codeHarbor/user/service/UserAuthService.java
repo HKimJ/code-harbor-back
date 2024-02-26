@@ -64,11 +64,16 @@ public class UserAuthService {
             if(input.getUserId() != null) {
                 UserDomain refreshingUser = userRepo.findUserByUserId(input.getUserId());
                 data.put("userId", refreshingUser.getUserId());
-                data.put("userNickname", refreshingUser.getUserNickname());
-                data.put("userGroupStatus", new HashMap<String, Object>(){{put("groupStatus", refreshingUser.getUserGroupJoinStatus());}});
                 if (refreshingUser.getUserGroupJoinStatus() != 0) {
                     UserGroupDomain user_Group = userGroupRepo.findByUser(refreshingUser);
-                    data.put("userGroupName", user_Group.getJoinedGroup().getGroupName());
+                    data.put("userGroupStatus", new HashMap<String, Object>(){{
+                        put("groupStatus", refreshingUser.getUserGroupJoinStatus());
+                        put("userGroupName", user_Group.getJoinedGroup().getGroupName());
+                    }});
+                } else {
+                    data.put("userGroupStatus", new HashMap<String, Object>(){{
+                        put("groupStatus", refreshingUser.getUserGroupJoinStatus());
+                    }});
                 }
                 if (refreshingUser.isHasNewMsg()) {
                     data.put("hasNewMsg", true);
