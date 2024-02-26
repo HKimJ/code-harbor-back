@@ -59,6 +59,7 @@ public class GroupCrudController {
                 { 
                     "groupCreator" : "test@example@test.com",
                     "groupName" : "myGroup" 
+                    "isChecked" : true / false
                 } 
             """)}))
     @PostMapping(value = "/createGroup", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -86,6 +87,7 @@ public class GroupCrudController {
                     @ExampleObject(name = "Example", value = """ 
                 { 
                     "groupName" : "myGroup",
+                    "groupInvitor" : "oldMember@naver.com",
                     "groupInvitee" : "newMember@naver.com" 
                 } 
             """)}))
@@ -114,16 +116,17 @@ public class GroupCrudController {
             examples = {
                     @ExampleObject(name = "Example", value = """ 
                 {
-                    "verify" : "certainValue"(메일 전송시 임의의 값으로 설정되어있음, 프론트는 상관안해도 됨)
+                    "groupName" : invitingGroup,
+                    "groupInvitee" : "newMember@naver.com"
                 }
             """)}))
     @CrossOrigin
     @PostMapping(value = "/acceptExistMember")
     @Operation(summary = "그룹원이 기존에 서비스에 가입된 인원을 그룹에 초대하는 api", description = "초대자의 그룹명과 초대할 인원의 이메일(userId)을 전달받아 그룹에 초대")
-    public void acceptExistUserAsMember(@RequestParam String groupName, @RequestParam String groupInvitee, @RequestParam String groupInviteVerify) {
+    public ResponseEntity<GroupCrudResponseDto> acceptExistUserAsMember(@Valid @RequestBody GroupCrudRequestDto input) {
         System.out.println("그룹원 초대 수락버튼 클릭됨");
-        GroupCrudResponseDto response = crudService.acceptExistUserAsMember(GroupCrudRequestDto.builder().groupName(groupName).groupInvitee(groupInvitee).groupInviteVerify(groupInviteVerify).build());
-        System.out.println(response);
+        GroupCrudResponseDto response = crudService.acceptExistUserAsMember(input);
+        return ResponseEntity.ok(response);
     }
 
     @io.swagger.v3.oas.annotations.parameters.RequestBody (content = @Content(
