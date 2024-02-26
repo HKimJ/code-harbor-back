@@ -140,17 +140,6 @@ public class GroupCrudService {
                         userMessageRepo.save(connecting);
 
                         // 초대 확인 메일 보내고 알림메세지 전송하는 로직
-                        mailSender.sendGroupInvitaiondMail(memberCandidate.getUserId(), currentGroup.getGroupName(), REDIRECT_URL);
-                        // 메세지 작성
-
-
-
-
-
-
-
-
-
                         response = mailSender.sendGroupInvitaiondMail(input.getGroupInvitee(), input.getGroupName(), REDIRECT_URL);
                     } else {
                         // 가입 메일 보내는 로직 + 가입 후 자동으로 그룹에 포함시키는 로직(추가 예정)
@@ -201,6 +190,9 @@ public class GroupCrudService {
                 messageRepo.save(newMsg);
                 data.put("msg", "회원을 그룹에 초대했습니다.");
                 response = GroupCrudResponseDto.builder().success(true).data(data).build();
+            } else if (user_Group != null && acceptingUser.getUserGroupJoinStatus() == 1) {
+                data.put("msg", "이미 수락된 요청입니다.");
+                response = GroupCrudResponseDto.builder().success(false).data(data).build();
             } else {
                 data.put("msg", "정상적이지 않은 수락 요청입니다.");
                 response = GroupCrudResponseDto.builder().success(false).data(data).build();
