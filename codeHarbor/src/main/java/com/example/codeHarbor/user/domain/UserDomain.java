@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.util.*;
 
 @Entity
@@ -26,13 +27,13 @@ public class UserDomain {
     @Column(columnDefinition = "VARCHAR(20)", nullable = false) @NotBlank
     private String userPassword;
     @Temporal(value = TemporalType.DATE) @Column(columnDefinition = "DATE DEFAULT (CURRENT_DATE)", insertable = false, updatable = false, nullable = false) @NotBlank
-    private Date userSignUpDate;
+    private LocalDate userSignUpDate;
     @Column(columnDefinition = "TINYINT(1) DEFAULT 0", nullable = false) @NotBlank
     private int userGroupJoinStatus; // 0: 미가입, 1: 가입, 2: 임시가입(가입 신청중, 미가입 상태 때문에 중간테이블이 아니라 여기서 관리)
     @Column(columnDefinition = "TINYINT(1)")
     private boolean hasNewMsg;
 
-    @OneToMany(mappedBy = "messageOwner")
+    @OneToMany(mappedBy = "messageOwner", cascade = CascadeType.ALL)
     private List<UserMessageDomain> messages;
 
 //    @OneToMany(mappedBy = "planOwner")
