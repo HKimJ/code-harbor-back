@@ -6,8 +6,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface GroupRepository extends JpaRepository<GroupDomain, Long> {
-    GroupDomain findGroupByGroupCreator(String groupCreator);
-    GroupDomain findGroupByGroupName(String groupName);
+    GroupDomain findByGroupCreator(String groupCreator);
+    GroupDomain findByGroupName(String groupName);
     boolean existsByGroupName(String groupName);
     boolean existsByGroupCreator(String groupCreator);
     GroupDomain save(GroupDomain groupDomain);
