@@ -123,7 +123,6 @@ public class GroupCrudService {
                     if (memberCandidate != null) {
                         memberCandidate.setHasNewMsg(true);
                         memberCandidate.setUserGroupJoinStatus(2);
-                        System.out.println(memberCandidate.getUserGroupJoinStatus());
                         userRepo.save(memberCandidate);
 
                         List<UserGroupDomain> originalMembers = currentGroup.getGroupMembers();
@@ -141,10 +140,10 @@ public class GroupCrudService {
                         user_Group.setJoinedGroup(currentGroup);
                         userGroupRepo.save(user_Group);
 
-                        UserMessageDomain connecting = new UserMessageDomain();
-                        connecting.setMessageOwner(memberCandidate);
-                        connecting.setMessage(newMsg);
-                        userMessageRepo.save(connecting);
+                        UserMessageDomain user_Message = new UserMessageDomain();
+                        user_Message.setMessageOwner(userRepo.findUserByUserId(input.getGroupInvitee()));
+                        user_Message.setMessage(messageRepo.findByMsgContentContainingAndMsgContentContainingAndMsgContentContaining(input.getGroupInvitee(), input.getGroupName(), "그룹으로 초대했습니다."));
+                        userMessageRepo.save(user_Message);
 
                         // 초대 확인 메일 보내고 알림메세지 전송하는 로직
                         response = mailSender.sendGroupInvitaiondMail(input.getGroupInvitee(), input.getGroupName(), REDIRECT_URL);
@@ -228,10 +227,7 @@ public class GroupCrudService {
                 List<GroupDomain> allGroups = groupRepo.findAll();
                 List<String[]> groupData = new ArrayList<>();
                 for (GroupDomain group : allGroups) {
-                    groupData.add(new String[]{"groupName", group.getGroupName()});
-                    groupData.add(new String[]{"groupCreator", group.getGroupCreator()});
-                    groupData.add(new String[]{"groupCreatedDate", group.getGroupCreateDate().toString()});
-                    groupData.add(new String[]{"groupMemberNum", String.valueOf(group.getGroupMembers().size())});
+                    groupData.add(new String[]{group.getGroupName(), group.getGroupCreator(), group.getGroupCreateDate().toString(), String.valueOf(group.getGroupMembers().size())});
                 }
                 data.put("msg", "모든 그룹 조회");
                 data.put("groupLists", groupData);
