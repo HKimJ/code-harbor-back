@@ -52,11 +52,13 @@ public class UserAuthService {
                 }
             } else {
                 response.setSuccess(false);
+                data.clear();
                 data.put("msg", "아이디 혹은 비밀번호가 일치하지 않습니다.");
                 response.setData(data);
             }
         } catch(Exception e) {
             e.printStackTrace();
+            data.clear();
             response.setSuccess(false);
             data.put("msg", "로그인 과정에서 문제가 발생했습니다. 문제 지속시 관리자에게 연락해주세요.");
             response.setData(data);
@@ -70,19 +72,22 @@ public class UserAuthService {
             if(input.getUserId() != null) {
                 UserDomain refreshingUser = userRepo.findUserByUserId(input.getUserId());
                 data.put("userId", refreshingUser.getUserId());
+                data.put("userNickname", refreshingUser.getUserNickname());
                 if (refreshingUser.getUserGroupJoinStatus() != 0) {
                     UserGroupDomain user_Group = userGroupRepo.findByUser(refreshingUser);
-                    data.put("userGroupStatus", new HashMap<String, Object>(){{
-                        put("groupStatus", refreshingUser.getUserGroupJoinStatus());
-                        put("userGroupName", user_Group.getJoinedGroup().getGroupName());
+                    data.put("userGroupStatus",
+                            new HashMap<String, Object>(){{
+                                put("groupStatus", refreshingUser.getUserGroupJoinStatus());
+                                put("userGroupName", user_Group.getJoinedGroup().getGroupName());
                     }});
                 } else {
-                    data.put("userGroupStatus", new HashMap<String, Object>(){{
-                        put("groupStatus", refreshingUser.getUserGroupJoinStatus());
+                    data.put("userGroupStatus",
+                            new HashMap<String, Object>(){{
+                                put("groupStatus", refreshingUser.getUserGroupJoinStatus());
                     }});
                 }
-                Map<Long, String[]> newMessageInfo = new HashMap<>();
                 if (refreshingUser.isHasNewMsg()) {
+                    Map<Long, String[]> newMessageInfo = new HashMap<>();
                     List<UserMessageDomain> newMessageList = userMessageRepo.findAllByMessageOwnerAndIsRead(refreshingUser, false);
                     for (UserMessageDomain msg : newMessageList) {
                         String[] temp = new String[2];
@@ -90,9 +95,12 @@ public class UserAuthService {
                         temp[1] = msg.getMessage().getMsgContent();
                         newMessageInfo.put(msg.getUserMessageId(), temp);
                     }
+                    data.put("newMessageList", newMessageInfo);
+                    data.put("msg", "새 메세지가 포함된 최신화된 유저정보 조회");
+                } else {
+                    data.put("newMessageList", null);
+                    data.put("msg", "새 메세지가 없는 최신화된 유저정보 조회");
                 }
-                data.put("newMessageList", newMessageInfo);
-                data.put("msg", "최신화된 유저정보 조회");
                 response.setSuccess(true);
             } else {
                 response.setSuccess(false);
@@ -102,12 +110,12 @@ public class UserAuthService {
         } catch (Exception e) {
             e.printStackTrace();
             response.setSuccess(false);
+            data.clear();
             data.put("msg", "유저정보 최신화 중 알수없는 문제가 발생했습니다. 지속시 관리자에게 연락해주세요.");
             response.setData(data);
         }
         return response;
     }
-
 
     public boolean isEmail(String input) {
         final String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
