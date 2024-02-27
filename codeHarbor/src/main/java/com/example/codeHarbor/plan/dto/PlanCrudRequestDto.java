@@ -12,12 +12,13 @@ import org.jetbrains.annotations.Nullable;
 @AllArgsConstructor
 public class PlanCrudRequestDto {
     @Email
-    @Schema(description = "계획생성 요청을 보낸 이용자 ID", example = "test@naver.com")
-    private final String userId;
-    @Schema(description = "계획생성 요청을 보낸 이용자 groupName", example = "testGroup")
+    @Schema(description = "계획 관련 요청을 보낸 이용자 ID", example = "test@naver.com")
+    private final String planOwner;
+    @Schema(description = "계획생성 요청을 보낸 이용자가 소속된 groupName", example = "testGroup")
     private final String GroupName;
-    @Nullable
-    @Schema(description = "이용자가 입력한 계획 내용", example = "finish my plan")
+    @Schema(description = "처리를 원하는 계획의 내용", example = "finished my plan")
     private final String PlanContent;
+    @Schema(description = "이용자가 계획을 완료했는지 여부를 체크하는 필드", example = "true/false")
+    private final boolean isDone;
 
 }
