@@ -63,41 +63,48 @@ public class GroupCrudService {
         if (!input.isChecked()) {
             data.put("msg", "그룹 이름 중복확인이 되지 않았습니다.");
             response = GroupCrudResponseDto.builder().success(true).data(data).build();
-            return response;
-        }
-        try {
-            GroupDomain newGroup = new GroupDomain();
-            UserDomain groupCreator = userRepo.findUserByUserId(input.getGroupCreator());
-            newGroup.setGroupCreator(input.getGroupCreator());
-            newGroup.setGroupName(input.getGroupName());
-            UserGroupDomain relation = new UserGroupDomain();
-            relation.setUser(groupCreator);
-            relation.setJoinedGroup(newGroup);
-            relation.setAccepted(true);
-            newGroup.setGroupMembers(new ArrayList<>() {{
-                add(relation);
-            }});
-            groupRepo.save(newGroup);
-            userGroupRepo.save(relation);
-            groupCreator.setUserGroupJoinStatus(1);
-            MessageDomain newMsg = new MessageDomain();
-            UserMessageDomain connecting = new UserMessageDomain();
-            newMsg.setMsgType("CREATE_GROUP");
-            newMsg.setMsgContent("[" + newGroup.getGroupName() +"] 그룹을 생성했습니다.");
-            messageRepo.save(newMsg);
-            connecting.setMessageOwner(groupCreator);
-            connecting.setMessage(newMsg);
-            userMessageRepo.save(connecting);
-            groupCreator.setHasNewMsg(true);
-            userRepo.save(groupCreator);
-            data.put("msg", "그룹 생성에 성공했습니다.");
-            response = GroupCrudResponseDto.builder().success(true).data(data).build();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            data.put("msg", "그룹생성 중 문제가 발생했습니다. 지속시 관리자에게 문의해주세요.");
+        } else if (groupRepo.existsByGroupCreator(input.getGroupCreator())) {
+            data.put("msg", "이미 그룹을 생성한 상태입니다.");
             response = GroupCrudResponseDto.builder().success(false).data(data).build();
+        } else if(!userRepo.existsByUserId(input.getGroupCreator())) {
+            data.put("msg", "올바르지 않은 접근입니다.");
+            response = GroupCrudResponseDto.builder().success(false).data(data).build();
+        } else {
+            try {
+                GroupDomain newGroup = new GroupDomain();
+                UserDomain groupCreator = userRepo.findUserByUserId(input.getGroupCreator());
+                groupCreator.setUserGroupJoinStatus(1);
+                newGroup.setGroupCreator(input.getGroupCreator());
+                newGroup.setGroupName(input.getGroupName());
+                UserGroupDomain relation = new UserGroupDomain();
+                relation.setUser(groupCreator);
+                relation.setJoinedGroup(newGroup);
+                relation.setAccepted(true);
+                newGroup.setGroupMembers(new ArrayList<>() {{
+                    add(relation);
+                }});
+                groupRepo.save(newGroup);
+                userGroupRepo.save(relation);
+                groupCreator.setUserGroupJoinStatus(1);
+                MessageDomain newMsg = new MessageDomain();
+                UserMessageDomain connecting = new UserMessageDomain();
+                newMsg.setMsgType("CREATE_GROUP");
+                newMsg.setMsgContent("[" + newGroup.getGroupName() +"] 그룹을 생성했습니다.");
+                messageRepo.save(newMsg);
+                connecting.setMessageOwner(groupCreator);
+                connecting.setMessage(newMsg);
+                userMessageRepo.save(connecting);
+                groupCreator.setHasNewMsg(true);
+                userRepo.save(groupCreator);
+                data.put("msg", "그룹 생성에 성공했습니다.");
+                response = GroupCrudResponseDto.builder().success(true).data(data).build();
+            } catch (Exception e) {
+                e.printStackTrace();
+                data.put("msg", "그룹생성 중 문제가 발생했습니다. 지속시 관리자에게 문의해주세요.");
+                response = GroupCrudResponseDto.builder().success(false).data(data).build();
+            }
         }
+
         return response;
     }
 
@@ -212,4 +219,66 @@ public class GroupCrudService {
 //        // 가입신청 메일에 미리 parameter를 던져줘서 그거 기준으로 가입시키기
 //        return response;
 //    }
+
+    public GroupCrudResponseDto showAllGroups(GroupCrudRequestDto input) {
+        GroupCrudResponseDto response;
+        Map<String, Object> data = new HashMap<>();
+        if (input.getUserId() != null && userRepo.existsByUserId(input.getUserId())) {
+            try {
+                List<GroupDomain> allGroups = groupRepo.findAll();
+                Map<String, Object> groupData = new HashMap<>();
+                for (GroupDomain group : allGroups) {
+                    groupData.put("groupName", group.getGroupName());
+                    groupData.put("groupCreator", group.getGroupCreator());
+                    groupData.put("groupCreatedDate", group.getGroupCreateDate().toString());
+                    groupData.put("groupMemberNum", group.getGroupMembers().size());
+                }
+                data.put("msg", "모든 그룹 조회");
+                data.put("groupLists", groupData);
+                response = GroupCrudResponseDto.builder().success(true).data(data).build();
+            } catch (Exception e) {
+                e.printStackTrace();
+                data.clear();
+                data.put("msg", "알 수 없는 오류가 발생했습니다. 지속시 관리자에게 문의해주세요");
+                response = GroupCrudResponseDto.builder().success(false).data(data).build();
+            }
+        } else {
+            data.put("msg", "올바르지 않은 접근입니다.");
+            response = GroupCrudResponseDto.builder().success(false).data(data).build();
+        }
+        return response;
+    }
+
+    public GroupCrudResponseDto joinNewGroup(GroupCrudRequestDto input) {
+        GroupCrudResponseDto response;
+        Map<String, Object> data = new HashMap<>();
+        if (input.getGroupJoiner() != null && input.getGroupName() != null) {
+            try {
+                UserDomain joiner = userRepo.findUserByUserId(input.getGroupJoiner());
+                GroupDomain group = groupRepo.findGroupByGroupName(input.getGroupName());
+                joiner.setUserGroupJoinStatus(2);
+                userRepo.save(joiner);
+                UserGroupDomain user_Group = new UserGroupDomain();
+                user_Group.setUser(joiner);
+                user_Group.setJoinedGroup(group);
+                userGroupRepo.save(user_Group);
+
+                List<UserGroupDomain> originMembers = group.getGroupMembers();
+                originMembers.add(userGroupRepo.findAllByUserAndJoinedGroup(joiner, group));
+                UserDomain groupCreator = userRepo.findUserByUserId(group.getGroupCreator());
+
+
+                response = GroupCrudResponseDto.builder().success(true).data(data).build();
+            } catch (Exception e) {
+                e.printStackTrace();
+                data.clear();
+                data.put("msg", "그룹 가입신청 중 알 수 없는 문제가 발생했습니다. 문제 지속시 관리자에게 문의해주세요");
+                response = GroupCrudResponseDto.builder().success(false).data(data).build();
+            }
+        } else {
+            data.put("msg", "올바르지 않은 요청입니다.");
+            response = GroupCrudResponseDto.builder().success(false).data(data).build();
+        }
+        return response;
+    }
 }
