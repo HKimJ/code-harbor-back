@@ -13,6 +13,7 @@ import com.example.codeHarbor.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -87,13 +88,15 @@ public class UserAuthService {
                     }});
                 }
                 if (refreshingUser.isHasNewMsg()) {
-                    Map<Long, String[]> newMessageInfo = new HashMap<>();
+                    List<Map<Long, String[]>> newMessageInfo = new ArrayList<>();
                     List<UserMessageDomain> newMessageList = userMessageRepo.findAllByMessageOwnerAndIsRead(refreshingUser, false);
                     for (UserMessageDomain msg : newMessageList) {
                         String[] temp = new String[2];
                         temp[0] = msg.getMessage().getMsgType();
                         temp[1] = msg.getMessage().getMsgContent();
-                        newMessageInfo.put(msg.getUserMessageId(), temp);
+                        newMessageInfo.add(new HashMap<>() {{
+                            put(msg.getUserMessageId(), temp);
+                        }});
                     }
                     data.put("newMessageList", newMessageInfo);
                     data.put("msg", "새 메세지가 포함된 최신화된 유저정보 조회");
