@@ -2,11 +2,11 @@ package com.example.codeHarbor.user.domain;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
 @Entity
-@Data
+@Getter
+@Setter
 @Table(name = "message_info")
 @NoArgsConstructor
 @AllArgsConstructor

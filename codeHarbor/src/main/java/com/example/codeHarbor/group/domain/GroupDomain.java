@@ -8,7 +8,8 @@ import java.time.LocalDate;
 import java.util.*;
 
 @Entity
-@Data
+@Getter
+@Setter
 @Table(name="group_info")
 @NoArgsConstructor
 @AllArgsConstructor

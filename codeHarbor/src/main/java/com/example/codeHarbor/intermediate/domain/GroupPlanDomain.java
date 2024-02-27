@@ -3,13 +3,12 @@ package com.example.codeHarbor.intermediate.domain;
 import com.example.codeHarbor.group.domain.GroupDomain;
 import com.example.codeHarbor.plan.domain.PlanDomain;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Table(name = "group_plans")
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class GroupPlanDomain {

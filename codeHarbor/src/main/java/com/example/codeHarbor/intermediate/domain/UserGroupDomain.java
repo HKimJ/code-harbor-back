@@ -5,12 +5,15 @@ import com.example.codeHarbor.user.domain.UserDomain;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDate;
 
 @Entity
-@Data
+@Getter
+@Setter
 @Table(name="Group_Members")
 @NoArgsConstructor
 public class UserGroupDomain {

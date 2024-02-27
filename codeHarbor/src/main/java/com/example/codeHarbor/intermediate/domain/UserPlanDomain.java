@@ -3,15 +3,14 @@ package com.example.codeHarbor.intermediate.domain;
 import com.example.codeHarbor.plan.domain.PlanDomain;
 import com.example.codeHarbor.user.domain.UserDomain;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "user_olan")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserPlanDomain {

@@ -1,18 +1,19 @@
 package com.example.codeHarbor.user.domain;
 
-//import com.example.codeHarbor.child.domain.UserPlanDomain;
 import com.example.codeHarbor.intermediate.domain.UserPlanDomain;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDate;
 import java.util.*;
 
 @Entity
-@Data
+@Getter
+@Setter
 @Table(name="user_Info")
 @NoArgsConstructor
 @AllArgsConstructor
