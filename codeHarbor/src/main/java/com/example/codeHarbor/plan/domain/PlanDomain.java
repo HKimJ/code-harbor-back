@@ -5,7 +5,8 @@ import lombok.*;
 
 @Entity
 @Table(name="plan_info")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class PlanDomain {
