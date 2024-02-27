@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Entity
@@ -21,9 +22,9 @@ public class UserGroupDomain {
     private UserDomain user;
     @ManyToOne
     private GroupDomain joinedGroup;
-    @Column(columnDefinition = "TINYINT(1) DEFAULT 0")
+    @Column(columnDefinition = "TINYINT(1) DEFAULT 0", nullable = false) @NotBlank
     private boolean accepted;
     @Temporal(value = TemporalType.DATE) @Column(columnDefinition = "DATE DEFAULT (CURRENT_DATE)", insertable = false) // 이러면 임시로 가입된 정보를 넣은 시점이 저장되어버림, 수락 시점에 쿼리를 한번 더 날려야할듯
-    private Date userGroupJoinDate;
+    private LocalDate userGroupJoinDate;
 
 }
