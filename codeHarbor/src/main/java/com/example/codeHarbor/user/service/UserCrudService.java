@@ -110,7 +110,7 @@ public class UserCrudService {
             messageRepo.save(newMsg);
 
             UserMessageDomain connecting = new UserMessageDomain();
-            connecting.setMessageOwner(userRepo.findUserByUserId(newUser.getUserId()));
+            connecting.setMessageOwner(userRepo.findByUserId(newUser.getUserId()));
             connecting.setMessage(messageRepo.findByMsgContent(newMsg.getMsgContent()));
             userMessageRepo.save(connecting);
 
@@ -136,7 +136,7 @@ public class UserCrudService {
             return response;
         }
         try {
-            UserDomain lostPw = userRepo.findUserByUserId(input.getUserId());
+            UserDomain lostPw = userRepo.findByUserId(input.getUserId());
             if (lostPw != null) {
                 response = mailSender.sendLostPasswordMail(lostPw.getUserId(), lostPw.getUserPassword());
             } else {
@@ -159,12 +159,12 @@ public class UserCrudService {
         Map<String, Object> data = new HashMap<>();
         try {
             if(input.getUserId() != null) {
-                UserGroupDomain refreshingUser = userGroupRepo.findAllByUserAndJoinedGroup(userRepo.findUserByUserId(input.getUserId()), groupRepo.findGroupByGroupName(input.getUserGroupName()));
+                UserGroupDomain refreshingUser = userGroupRepo.findAllByUserAndJoinedGroup(userRepo.findByUserId(input.getUserId()), groupRepo.findByGroupName(input.getUserGroupName()));
                 if (!input.getUserGroupName().equals(refreshingUser.getJoinedGroup().getGroupName())) {
-                    refreshingUser.setJoinedGroup(groupRepo.findGroupByGroupName(input.getUserGroupName()));
+                    refreshingUser.setJoinedGroup(groupRepo.findByGroupName(input.getUserGroupName()));
                 }
                 if (!input.getUserNickname().equals(refreshingUser.getUser().getUserNickname())) {
-                    refreshingUser.setUser(userRepo.findUserByUserNickname(input.getUserNickname()));
+                    refreshingUser.setUser(userRepo.findByUserNickname(input.getUserNickname()));
                 }
                 if (!input.getUserPassword().equals(refreshingUser.getUser().getUserPassword())) {
                     refreshingUser.getUser().setUserPassword(input.getUserPassword()); // 체크 요망
@@ -194,7 +194,7 @@ public class UserCrudService {
         Map<String, Object> data = new HashMap<>();
         try {
             if(input.getUserId() != null) {
-                List<UserMessageDomain> newMessageList = userMessageRepo.findAllByMessageOwnerAndIsRead(userRepo.findUserByUserId(input.getUserId()), false);
+                List<UserMessageDomain> newMessageList = userMessageRepo.findAllByMessageOwnerAndIsRead(userRepo.findByUserId(input.getUserId()), false);
                 Map<Long, String[]> newMessageMap = new HashMap<>();
                 for (UserMessageDomain newMessage : newMessageList) {
                     newMessageMap.put(
@@ -224,8 +224,8 @@ public class UserCrudService {
         Map<String, Object> data = new HashMap<>();
         try {
             if(input.getUserId() != null) {
-                UserDomain currentUser = userRepo.findUserByUserId(input.getUserId());
-                List<UserMessageDomain> newMessageList = userMessageRepo.findAllByMessageOwnerAndIsRead(userRepo.findUserByUserId(input.getUserId()), false);
+                UserDomain currentUser = userRepo.findByUserId(input.getUserId());
+                List<UserMessageDomain> newMessageList = userMessageRepo.findAllByMessageOwnerAndIsRead(userRepo.findByUserId(input.getUserId()), false);
                 List<UserMessageDomain> resetList = new ArrayList<>();
                 for (UserMessageDomain newMessage : newMessageList) {
                     newMessage.setRead(true);

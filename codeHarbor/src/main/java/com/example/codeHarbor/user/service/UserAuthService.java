@@ -37,9 +37,9 @@ public class UserAuthService {
             return response;
         }
         try {
-            UserDomain dbUser = userRepo.findUserByUserId(input.getUserId());
+            UserDomain dbUser = userRepo.findByUserId(input.getUserId());
             if (dbUser != null) {
-                UserDomain checkUser = userRepo.findUserByUserIdAndUserPassword(input.getUserId(), input.getUserPassword());
+                UserDomain checkUser = userRepo.findByUserIdAndUserPassword(input.getUserId(), input.getUserPassword());
                 if (dbUser.equals(checkUser)) {
                     response.setSuccess(true);
                     data.put("userId", checkUser.getUserId());
@@ -70,7 +70,7 @@ public class UserAuthService {
         Map<String, Object> data = new HashMap<>();
         try {
             if(input.getUserId() != null) {
-                UserDomain refreshingUser = userRepo.findUserByUserId(input.getUserId());
+                UserDomain refreshingUser = userRepo.findByUserId(input.getUserId());
                 data.put("userId", refreshingUser.getUserId());
                 data.put("userNickname", refreshingUser.getUserNickname());
                 if (refreshingUser.getUserGroupJoinStatus() != 0) {

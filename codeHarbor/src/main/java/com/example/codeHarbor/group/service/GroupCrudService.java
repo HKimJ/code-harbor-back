@@ -72,7 +72,7 @@ public class GroupCrudService {
         } else {
             try {
                 GroupDomain newGroup = new GroupDomain();
-                UserDomain groupCreator = userRepo.findUserByUserId(input.getGroupCreator());
+                UserDomain groupCreator = userRepo.findByUserId(input.getGroupCreator());
                 groupCreator.setUserGroupJoinStatus(1);
                 newGroup.setGroupCreator(input.getGroupCreator());
                 newGroup.setGroupName(input.getGroupName());
@@ -117,9 +117,9 @@ public class GroupCrudService {
             response = GroupCrudResponseDto.builder().success(false).data(data).build();
         } else {
             try {
-                currentGroup = groupRepo.findGroupByGroupName(input.getGroupName());
-                if (!userGroupRepo.existsAllByUserAndJoinedGroup(userRepo.findUserByUserId(input.getGroupInvitee()), currentGroup)) {
-                    UserDomain memberCandidate = userRepo.findUserByUserId(input.getGroupInvitee());
+                currentGroup = groupRepo.findByGroupName(input.getGroupName());
+                if (!userGroupRepo.existsAllByUserAndJoinedGroup(userRepo.findByUserId(input.getGroupInvitee()), currentGroup)) {
+                    UserDomain memberCandidate = userRepo.findByUserId(input.getGroupInvitee());
                     if (memberCandidate != null) {
                         memberCandidate.setHasNewMsg(true);
                         memberCandidate.setUserGroupJoinStatus(2);
@@ -141,7 +141,7 @@ public class GroupCrudService {
                         userGroupRepo.save(user_Group);
 
                         UserMessageDomain user_Message = new UserMessageDomain();
-                        user_Message.setMessageOwner(userRepo.findUserByUserId(input.getGroupInvitee()));
+                        user_Message.setMessageOwner(userRepo.findByUserId(input.getGroupInvitee()));
                         user_Message.setMessage(messageRepo.findByMsgContentContainingAndMsgContentContainingAndMsgContentContaining(input.getGroupInvitee(), input.getGroupName(), "그룹으로 초대했습니다."));
                         userMessageRepo.save(user_Message);
 
@@ -170,16 +170,16 @@ public class GroupCrudService {
         Map<String, Object> data = new HashMap<>();
 
         try {
-            UserDomain acceptingUser = userRepo.findUserByUserId(input.getGroupInvitee());
-            GroupDomain acceptingGroup = groupRepo.findGroupByGroupName(input.getGroupName());
+            UserDomain acceptingUser = userRepo.findByUserId(input.getGroupInvitee());
+            GroupDomain acceptingGroup = groupRepo.findByGroupName(input.getGroupName());
             UserGroupDomain user_Group = userGroupRepo.findAllByUserAndJoinedGroup(acceptingUser, acceptingGroup);
             if (user_Group != null && acceptingUser.getUserGroupJoinStatus() == 2) {
                 MessageDomain newMsg = new MessageDomain();
                 newMsg.setMsgType("GROUP_ACCEPT");
                 newMsg.setMsgContent(acceptingGroup.getGroupName() + " 그룹으로 가입되었습니다.");
 
-                user_Group.setUser(userRepo.findUserByUserId(input.getGroupInvitee()));
-                user_Group.setJoinedGroup(groupRepo.findGroupByGroupName(input.getGroupName()));
+                user_Group.setUser(userRepo.findByUserId(input.getGroupInvitee()));
+                user_Group.setJoinedGroup(groupRepo.findByGroupName(input.getGroupName()));
                 user_Group.setAccepted(true);
                 userGroupRepo.save(user_Group);
 
@@ -250,8 +250,8 @@ public class GroupCrudService {
         Map<String, Object> data = new HashMap<>();
         if (input.getGroupJoiner() != null && input.getGroupName() != null) {
             try {
-                UserDomain joiner = userRepo.findUserByUserId(input.getGroupJoiner());
-                GroupDomain group = groupRepo.findGroupByGroupName(input.getGroupName());
+                UserDomain joiner = userRepo.findByUserId(input.getGroupJoiner());
+                GroupDomain group = groupRepo.findByGroupName(input.getGroupName());
                 joiner.setUserGroupJoinStatus(2);
                 userRepo.save(joiner);
                 UserGroupDomain user_Group = new UserGroupDomain();
@@ -261,7 +261,7 @@ public class GroupCrudService {
 
                 List<UserGroupDomain> originMembers = group.getGroupMembers();
                 originMembers.add(userGroupRepo.findAllByUserAndJoinedGroup(joiner, group));
-                UserDomain groupCreator = userRepo.findUserByUserId(group.getGroupCreator());
+                UserDomain groupCreator = userRepo.findByUserId(group.getGroupCreator());
 
 
                 response = GroupCrudResponseDto.builder().success(true).data(data).build();
