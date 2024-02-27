@@ -1,8 +1,7 @@
 package com.example.codeHarbor.user.service;
 
-import com.example.codeHarbor.child.domain.UserGroupDomain;
-import com.example.codeHarbor.child.repository.UserGroupRepository;
-import com.example.codeHarbor.group.domain.GroupDomain;
+import com.example.codeHarbor.intermediate.domain.UserGroupDomain;
+import com.example.codeHarbor.intermediate.repository.UserGroupRepository;
 import com.example.codeHarbor.group.repository.GroupRepository;
 import com.example.codeHarbor.tool.javamail.JavaMailService;
 import com.example.codeHarbor.user.domain.MessageDomain;

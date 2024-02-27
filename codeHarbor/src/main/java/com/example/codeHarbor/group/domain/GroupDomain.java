@@ -1,6 +1,7 @@
 package com.example.codeHarbor.group.domain;
 
-import com.example.codeHarbor.child.domain.UserGroupDomain;
+import com.example.codeHarbor.intermediate.domain.GroupPlanDomain;
+import com.example.codeHarbor.intermediate.domain.UserGroupDomain;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDate;
@@ -24,6 +25,9 @@ public class GroupDomain {
 
     @OneToMany(mappedBy = "joinedGroup")
     private List<UserGroupDomain> groupMembers;
+
+    @OneToMany(mappedBy = "parentGroup")
+    private List<GroupPlanDomain> groupPlans;
 
     @Override
     public boolean equals(Object obj) {

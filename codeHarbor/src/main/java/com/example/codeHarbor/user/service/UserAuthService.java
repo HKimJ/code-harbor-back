@@ -1,12 +1,11 @@
 package com.example.codeHarbor.user.service;
 
-import com.example.codeHarbor.child.domain.UserGroupDomain;
-import com.example.codeHarbor.child.repository.UserGroupRepository;
+import com.example.codeHarbor.intermediate.domain.UserGroupDomain;
+import com.example.codeHarbor.intermediate.repository.UserGroupRepository;
 import com.example.codeHarbor.user.domain.UserDomain;
 import com.example.codeHarbor.user.domain.UserMessageDomain;
 import com.example.codeHarbor.user.dto.UserAuthRequestDto;
 import com.example.codeHarbor.user.dto.UserAuthResponseDto;
-import com.example.codeHarbor.user.dto.UserCrudResponseDto;
 import com.example.codeHarbor.user.repository.MessageRepository;
 import com.example.codeHarbor.user.repository.UserMessageRepository;
 import com.example.codeHarbor.user.repository.UserRepository;

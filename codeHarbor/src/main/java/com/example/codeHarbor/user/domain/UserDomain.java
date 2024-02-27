@@ -1,11 +1,9 @@
 package com.example.codeHarbor.user.domain;
 
 //import com.example.codeHarbor.child.domain.UserPlanDomain;
-import com.example.codeHarbor.child.domain.UserGroupDomain;
-import io.micrometer.common.lang.Nullable;
+import com.example.codeHarbor.intermediate.domain.UserPlanDomain;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -35,6 +33,9 @@ public class UserDomain {
 
     @OneToMany(mappedBy = "messageOwner", cascade = CascadeType.ALL)
     private List<UserMessageDomain> messages;
+
+    @OneToMany(mappedBy = "planOwner", cascade = CascadeType.ALL)
+    private List<UserPlanDomain> plans;
 
 //    @OneToMany(mappedBy = "planOwner")
 //    private Set<UserPlanDomain> userPlans;
