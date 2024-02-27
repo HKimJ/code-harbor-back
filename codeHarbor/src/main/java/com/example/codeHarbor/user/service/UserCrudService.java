@@ -111,8 +111,8 @@ public class UserCrudService {
             messageRepo.save(newMsg);
 
             UserMessageDomain connecting = new UserMessageDomain();
-            connecting.setMessageOwner(newUser);
-            connecting.setMessage(newMsg);
+            connecting.setMessageOwner(userRepo.findUserByUserId(newUser.getUserId()));
+            connecting.setMessage(messageRepo.findByMsgContent(newMsg.getMsgContent()));
             userMessageRepo.save(connecting);
 
             response.setSuccess(true);
