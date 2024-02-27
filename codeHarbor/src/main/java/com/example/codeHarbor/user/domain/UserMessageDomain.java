@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Entity
 @Data
@@ -22,8 +22,8 @@ public class UserMessageDomain {
     @ManyToOne
     private MessageDomain message;
 
-    @Temporal(value = TemporalType.DATE) @Column(columnDefinition = "DATE DEFAULT (CURRENT_DATE)", insertable = false, updatable = false)
-    private Date userMessageCreatedDate;
+    @Temporal(value = TemporalType.TIMESTAMP) @Column(columnDefinition = "DATETIME DEFAULT (CURRENT_TIMESTAMP)", insertable = false, updatable = false)
+    private LocalDateTime userMessageCreatedDateTime;
 
     @Column(columnDefinition = "TINYINT(1) DEFAULT 0", nullable = false)
     private boolean isRead;
