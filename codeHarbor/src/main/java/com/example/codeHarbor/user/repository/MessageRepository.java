@@ -5,8 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface MessageRepository extends JpaRepository<MessageDomain, Long> {
-    MessageDomain save(MessageDomain message);
-
+    MessageDomain findByMsgContent(String msgContent);
     boolean deleteByMsgId(Long msgId);
-
+    MessageDomain save(MessageDomain message);
 }
