@@ -1,10 +1,9 @@
 package com.example.codeHarbor.group.domain;
 
 import com.example.codeHarbor.child.domain.UserGroupDomain;
-import com.example.codeHarbor.user.domain.UserMessageDomain;
 import jakarta.persistence.*;
 import lombok.*;
-
+import java.time.LocalDate;
 import java.util.*;
 
 @Entity
@@ -21,7 +20,7 @@ public class GroupDomain {
     @Column(columnDefinition = "VARCHAR(50)", updatable = false)
     private String groupCreator;
     @Temporal(value = TemporalType.DATE) @Column(columnDefinition = "DATE DEFAULT (CURRENT_DATE)", insertable = false, updatable = false)
-    private Date groupCreatedate;
+    private LocalDate groupCreateDate;
 
     @OneToMany(mappedBy = "joinedGroup")
     private List<UserGroupDomain> groupMembers;
