@@ -1,7 +1,7 @@
 package com.example.codeHarbor.group.service;
 
-import com.example.codeHarbor.child.domain.UserGroupDomain;
-import com.example.codeHarbor.child.repository.UserGroupRepository;
+import com.example.codeHarbor.intermediate.domain.UserGroupDomain;
+import com.example.codeHarbor.intermediate.repository.UserGroupRepository;
 import com.example.codeHarbor.group.domain.GroupDomain;
 import com.example.codeHarbor.group.dto.GroupCrudRequestDto;
 import com.example.codeHarbor.group.dto.GroupCrudResponseDto;
@@ -226,12 +226,12 @@ public class GroupCrudService {
         if (input.getUserId() != null && userRepo.existsByUserId(input.getUserId())) {
             try {
                 List<GroupDomain> allGroups = groupRepo.findAll();
-                Map<String, Object> groupData = new HashMap<>();
+                List<String[]> groupData = new ArrayList<>();
                 for (GroupDomain group : allGroups) {
-                    groupData.put("groupName", group.getGroupName());
-                    groupData.put("groupCreator", group.getGroupCreator());
-                    groupData.put("groupCreatedDate", group.getGroupCreateDate().toString());
-                    groupData.put("groupMemberNum", group.getGroupMembers().size());
+                    groupData.add(new String[]{"groupName", group.getGroupName()});
+                    groupData.add(new String[]{"groupCreator", group.getGroupCreator()});
+                    groupData.add(new String[]{"groupCreatedDate", group.getGroupCreateDate().toString()});
+                    groupData.add(new String[]{"groupMemberNum", String.valueOf(group.getGroupMembers().size())});
                 }
                 data.put("msg", "모든 그룹 조회");
                 data.put("groupLists", groupData);
