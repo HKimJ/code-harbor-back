@@ -17,6 +17,11 @@ public class GroupCrudRequestDto {
     private final String groupInvitor;
     @Schema(description = "그룹에 초대할 인원의 userId or email 주소)", example = "invitee@naver.com")
     private final String groupInvitee;
+    @Schema(description = "그룹가입 신청한 인원의 userId or email 주소)", example = "Joiner@naver.com")
+    private final String groupJoiner;
     @Schema(description = "그룹에 초대할 인원의 인증용 value(추후 토큰등으로 교체)", example = "certainValue")
     private final String groupInviteVerify;
+    @Schema(description = "단순 로그 저장용으로 전송하는 userId", example = "someone@naver.com")
+    private final String userId;
+
 }
