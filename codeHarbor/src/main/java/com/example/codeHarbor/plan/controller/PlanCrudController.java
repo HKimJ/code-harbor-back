@@ -32,9 +32,9 @@ public class PlanCrudController {
     @io.swagger.v3.oas.annotations.parameters.RequestBody (content = @Content(
             examples = {
                     @ExampleObject(name = "Example", value = """ 
-                {   "userId" : "test@naver.com",
+                {   "planCreator" : "test@naver.com",
                     "groupName" : "myGroup",
-                    "planContent" : "do example plan"
+                    "planContent" : "do example_plan until 2pm"
                 } 
             """)}))
     @PostMapping(value = "/createPlan", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
