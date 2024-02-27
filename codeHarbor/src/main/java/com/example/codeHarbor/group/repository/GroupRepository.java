@@ -9,6 +9,7 @@ public interface GroupRepository extends JpaRepository<GroupDomain, Long> {
     GroupDomain findGroupByGroupCreator(String groupCreator);
     GroupDomain findGroupByGroupName(String groupName);
     boolean existsByGroupName(String groupName);
+    boolean existsByGroupCreator(String groupCreator);
     GroupDomain save(GroupDomain groupDomain);
 
 }
