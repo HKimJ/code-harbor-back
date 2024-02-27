@@ -58,8 +58,8 @@ public class GroupCrudController {
                     @ExampleObject(name = "Example", value = """ 
                 { 
                     "groupCreator" : "test@example@test.com",
-                    "groupName" : "myGroup" 
-                    "isChecked" : true / false
+                    "groupName" : "myGroup",
+                    "isChecked" : "true/false(boolean)"
                 } 
             """)}))
     @PostMapping(value = "/createGroup", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -129,18 +129,51 @@ public class GroupCrudController {
         return ResponseEntity.ok(response);
     }
 
+//    @io.swagger.v3.oas.annotations.parameters.RequestBody (content = @Content(
+//            examples = {
+//                    @ExampleObject(name = "Example", value = """
+//                {
+//                    "verify" : "certainValue"(메일 전송시 임의의 값으로 설정되어있음, 프론트는 상관안해도 됨)
+//                }
+//            """)}))
+//    @PostMapping(value = "/acceptNewMember")
+//    @Operation(summary = "그룹원이 새로 서비스에 가입된 인원을 그룹에 초대하는 요청", description = "초대자의 그룹명과 초대할 인원의 이메일(userId)을 전달받아 그룹에 초대")
+//    public ResponseEntity<GroupCrudResponseDto> acceptNewUserAsMember(@RequestParam String groupInvitee, @RequestParam String verify) {
+//        System.out.println("그룹원 초대 수락버튼 클릭됨");
+//        GroupCrudResponseDto response = crudService.acceptExistUserAsMember(GroupCrudRequestDto.builder().groupInvitee(groupInvitee).groupInviteVerify(verify).build());
+//        return ResponseEntity.ok(response);
+//    }
+
     @io.swagger.v3.oas.annotations.parameters.RequestBody (content = @Content(
             examples = {
                     @ExampleObject(name = "Example", value = """ 
-                { 
-                    "verify" : "certainValue"(메일 전송시 임의의 값으로 설정되어있음, 프론트는 상관안해도 됨)
-                } 
+                {
+                    "userId" : "someone@naver.com(추후 로그에 남기기용으로 전송)"
+                }
             """)}))
-    @PostMapping(value = "/acceptNewMember")
-    @Operation(summary = "그룹원이 새로 서비스에 가입된 인원을 그룹에 초대하는 요청", description = "초대자의 그룹명과 초대할 인원의 이메일(userId)을 전달받아 그룹에 초대")
-    public ResponseEntity<GroupCrudResponseDto> acceptNewUserAsMember(@RequestParam String groupInvitee, @RequestParam String verify) {
-        System.out.println("그룹원 초대 수락버튼 클릭됨");
-        GroupCrudResponseDto response = crudService.acceptExistUserAsMember(GroupCrudRequestDto.builder().groupInvitee(groupInvitee).groupInviteVerify(verify).build());
+    @PostMapping(value = "/showAllGroups")
+    @Operation(summary = "모든 그룹에 대한 정보 리스트를 요구하는 요청", description = "요청이 들어오면 모든 그룹 리스트 반환")
+    public ResponseEntity<GroupCrudResponseDto> showAllGroups(@Valid @RequestBody GroupCrudRequestDto input) {
+        System.out.println("그룹 리스트 반환 요청됨");
+        GroupCrudResponseDto response = crudService.showAllGroups(input);
         return ResponseEntity.ok(response);
     }
+
+    @io.swagger.v3.oas.annotations.parameters.RequestBody (content = @Content(
+            examples = {
+                    @ExampleObject(name = "Example", value = """ 
+                {
+                    "groupName" : "someGroup",
+                    "groupJoiner" : "joiningMember@naver.com"
+                }
+            """)}))
+    @PostMapping(value = "/joinNewGroup")
+    @Operation(summary = "그룹원이 새로 서비스에 가입된 인원을 그룹에 초대하는 요청", description = "초대자의 그룹명과 초대할 인원의 이메일(userId)을 전달받아 그룹에 초대")
+    public ResponseEntity<GroupCrudResponseDto> joinNewGroup(@Valid @RequestBody GroupCrudRequestDto input) {
+        System.out.println("그룹원 초대 수락버튼 클릭됨");
+        GroupCrudResponseDto response = crudService.joinNewGroup(input);
+        return ResponseEntity.ok(response);
+    }
+
+
 }
