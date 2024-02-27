@@ -11,10 +11,11 @@ import lombok.*;
 public class PlanDomain {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long planId;
-    private String planCreator;
-    private String planGroup;
+
     private String planContent;
 
+    @Column(columnDefinition = "TINYINT(1) DEFAULT 0", nullable = false)
+    private boolean isDone;
 
 
 }
