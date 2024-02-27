@@ -106,7 +106,7 @@ public class JavaMailService {
         String title = "[CodeHarbor 그룹 초대]";
         StringBuilder content = new StringBuilder();
         content.append("<h1> [ ").append(groupName).append(" ] 그룹에서 사용자를 초대하려고 합니다.</h1>")
-                .append("<h2> 하단의 링크로 CodeHarbor로 이동 후 그룹가입 요청을 수락해주세요. </h2>")
+                .append("<h2> 하단의 링크로 CodeHarbor로 이동 후 그룹초대 요청을 수락해주세요. </h2>")
                 .append("<a href=\"").append(redirectUrl).append("\"/>");
         try {
             MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, false, "UTF-8");
@@ -161,10 +161,10 @@ public class JavaMailService {
         GroupCrudResponseDto response;
         Map<String, Object> data = new HashMap<>();
         MimeMessage mimeMessage = mailSender.createMimeMessage();
-        String title = "[CodeHarbor 가입 안내]";
+        String title = "[CodeHarbor 초대장]";
         StringBuilder content = new StringBuilder();
         content.append("<h1> [ ").append(groupName).append(" ] 그룹에서 사용자를 초대하려고 합니다.</h1>")
-                .append("<h2> 서비스를 이용하시려면 하단 링크를 클릭해 CodeHarbor에 가입해주세요. </h2>")
+                .append("<h2> 서비스를 이용하시려면 하단 링크를 클릭해 CodeHarbor로 이동 후 가입해주세요. </h2>")
                 .append("<form action=").append(redirectUrl).append(" method=\"POST\">")
                 .append("<input type=\"hidden\" name=\"groupName\" value=\"").append(groupName).append("\">")
                 .append("<input type=\"hidden\" name=\"groupInvitee\" value=\"").append(email).append("\">")
@@ -176,7 +176,7 @@ public class JavaMailService {
             mimeMessageHelper.setSubject(title); // 메일 제목
             mimeMessageHelper.setText(content.toString(), true); // 메일 본문 내용, HTML 여부
             mailSender.send(mimeMessage);
-            data.put("msg", "가입링크 메일이 발송되었습니다.");
+            data.put("msg", "초대 대상인 미가입자에게 가입링크 메일이 발송되었습니다.");
             response = GroupCrudResponseDto.builder().success(true).data(data).build();
         } catch (Exception e) {
             e.printStackTrace();
@@ -185,6 +185,8 @@ public class JavaMailService {
         }
         return response;
     }
+
+
     private String generateCode() {
         Random random = new Random();
         int code = random.nextInt(9000) + 1000; // Generates a 4-digit number between 1000 and 9999
