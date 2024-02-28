@@ -132,7 +132,7 @@ public class GroupCrudService {
 
                         MessageDomain newMsg = new MessageDomain();
                         newMsg.setMsgType("INVITING_MSG");
-                        newMsg.setMsgContent(input.getGroupInvitor() + "님이 사용자를 " + input.getGroupName() + " 그룹으로 초대했습니다." );
+                        newMsg.setMsgContent(input.getGroupInvitor() + "님이 " + input.getGroupInvitee() + "님을 " + input.getGroupName() + " 그룹으로 초대했습니다." );
                         messageRepo.save(newMsg);
 
                         UserGroupDomain user_Group = new UserGroupDomain();
@@ -141,8 +141,8 @@ public class GroupCrudService {
                         userGroupRepo.save(user_Group);
 
                         UserMessageDomain user_Message = new UserMessageDomain();
-                        user_Message.setMessageOwner(userRepo.findByUserId(input.getGroupInvitee()));
-                        user_Message.setMessage(messageRepo.findByMsgContentContainingAndMsgContentContainingAndMsgContentContaining(input.getGroupInvitee(), input.getGroupName(), "그룹으로 초대했습니다."));
+                        user_Message.setMessageOwner(memberCandidate);
+                        user_Message.setMessage(messageRepo.findByMsgContentStartsWithAndMsgContentContainsAndMsgContentEndsWith(input.getGroupInvitor(), input.getGroupInvitee(), "그룹으로 초대했습니다."));
                         userMessageRepo.save(user_Message);
 
                         // 초대 확인 메일 보내고 알림메세지 전송하는 로직
@@ -152,7 +152,7 @@ public class GroupCrudService {
                         response = mailSender.sendSignUpMail(input.getGroupInvitee(), input.getGroupName(), REDIRECT_URL);
                     }
                 } else {
-                    data.put("msg", "이미 그룹에 가입된 이용자입니다.");
+                    data.put("msg", "이미 그룹가입 요청이 전송되었거나 그룹에 가입된 이용자입니다.");
                     response = GroupCrudResponseDto.builder().success(false).data(data).build();
                 }
 
